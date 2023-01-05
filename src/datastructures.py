@@ -31,8 +31,9 @@ class Document:
 
 
 class CodeInstance:
-    def __init__(self, text):
+    def __init__(self, id, text, start, end, code):
+        self.id = id
         self.text = text
-        self.code = None
-        self.start = None
-        self.end = None
+        self.start = start
+        self.end = end
+        self.code = code

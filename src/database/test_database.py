@@ -209,18 +209,51 @@ class CodeTableTest(TestBase):
         self.assertTrue(self.codeExistsByName(newName))
 
 
-# class CodeInstanceTableTest(TestBase):
-#
-#     def setUp(self):
-#         super().setUp()
-#         self.db.createProject('test_project')
-#         self.db.createCode('code', '#FF00FF', 1)
-#         self.db.createDocument('doc', 1)
+class CodeInstanceTableTest(TestBase):
 
-    # def test_create_code_instance(self):
-    #
-    #     self.db.createCodeInstance()
+    def setUp(self):
+        super().setUp()
+        self.db.createProject('test_project')
+        self.db.createCode('code', '#FF00FF', 1)
+        self.db.createDocument('doc', 1)
 
+    def test_create_code_instance(self):
+        self.db.createCodeInstance(1, 1, "test_text", 5, 20)
+        self.cursor.execute("""SELECT * FROM codeinstance""")
+        codeInstances = self.cursor.fetchall()
+        self.assertEqual(len(codeInstances), 1)
+
+    def test_get_code_document_instances(self):
+        self.db.createCodeInstance(1, 1, "test_text", 5, 20)
+        codeInstance = self.db.getDocumentCodeInstances(1)[0]
+        self.assertEqual(codeInstance.text, 'test_text')
+        self.assertEqual(codeInstance.start, 5)
+        self.assertEqual(codeInstance.end, 20)
+        self.assertEqual(codeInstance.code.name, 'code')
+
+    def test_delete_codeInstance(self):
+        self.db.createCodeInstance(1, 1, "test_text", 5, 20)
+        self.db.deleteCodeInstance(1)
+        self.cursor.execute("""SELECT * FROM codeinstance""")
+        instances = self.cursor.fetchall()
+        self.assertEqual(len(instances), 0)
+
+    def test_deleting_non_existent_codeInstance_doesnt_break(self):
+        self.db.deleteCodeInstance(1)
+        self.cursor.execute("""SELECT * FROM codeinstance""")
+        instances = self.cursor.fetchall()
+        self.assertEqual(len(instances), 0)
+
+    def test_get_Project_code_instance(self):
+        self.db.createDocument('doc2', 1)
+        self.db.createCodeInstance(1, 1, 'text', 5, 20)
+        self.db.createCodeInstance(2, 1, 'text2', 5, 20)
+        self.db.createProject('project2')
+        self.db.createDocument('doc3', 2)
+        self.db.createCode('code3', 'color', 2)
+        self.db.createCodeInstance(3, 2, 'project2Instance', 5, 10)
+        codeInstances = self.db.getProjectCodeInstances(1)
+        self.assertEqual(len(codeInstances), 2)
 
 
 

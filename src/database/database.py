@@ -1,5 +1,5 @@
 import sqlite3
-from src.datastructures import Code, Project, Document
+from src.datastructures import Code, Project, Document, CodeInstance
 
 
 class Database:
@@ -53,9 +53,12 @@ class Database:
     def createCodeInstanceTable(self):
         self.createTable('codeinstance', '(id integer PRIMARY KEY, '
                                          'document integer, '
+                                         'code integer,'
                                          'text text, '
                                          'start integer,'
-                                         'end integer)')
+                                         'end integer,'
+                                         'FOREIGN KEY (document) REFERENCES document (id), '
+                                         'FOREIGN KEY (code) REFERENCES code (id)) ')
 
     def createTable(self, name, fields):
         sql = """CREATE TABLE {} {}""".format(name, fields)
@@ -88,11 +91,10 @@ class Database:
         return len(codes) > 0
 
     def deleteCode(self, codeID):
-        if self.codeExistsByID(codeID):
-            sql = """DELETE FROM code 
-                        WHERE id = :codeID"""
-            self.cursor.execute(sql, {'codeID': codeID})
-            self.conn.commit()
+        sql = """DELETE FROM code 
+                    WHERE id = :codeID"""
+        self.cursor.execute(sql, {'codeID': codeID})
+        self.conn.commit()
 
     def updateCode(self, codeId, name, color):
         sql = """UPDATE code
@@ -132,8 +134,6 @@ class Database:
         return len(projects) > 0
 
     def deleteProject(self, projectID):
-        if not self.projectExists(projectID):
-            return
         sql = """DELETE FROM project WHERE id=:projectID"""
         self.cursor.execute(sql, {'projectID': projectID})
         self.conn.commit()
@@ -200,3 +200,57 @@ class Database:
             document = Document(docObject[0], docObject[1])
             docs.append(document)
         return docs
+
+    def createCodeInstance(self, documentID, codeID, text, start, end):
+        sql = """INSERT INTO codeinstance (id, document, code, text, start, end) 
+                    VALUES (NULL, :documentID, :codeID, :text, :start, :end)"""
+        self.cursor.execute(sql, {'documentID': documentID,
+                                  'codeID': codeID,
+                                  'text': text,
+                                  'start': start,
+                                  'end': end})
+        self.conn.commit()
+
+    def getDocumentCodeInstances(self, documentID):
+        sql = """SELECT code.id, 
+                        code.name, 
+                        code.color,
+                        codeinstance.id,
+                        codeinstance.text,
+                        codeinstance.start,
+                        codeinstance.end
+                FROM codeinstance 
+                INNER JOIN code ON codeinstance.code = code.id 
+                WHERE document=:documentID"""
+        self.cursor.execute(sql, {'documentID': documentID})
+        data = self.cursor.fetchall()
+        return self.buildCodeInstanceObject(data)
+
+    def buildCodeInstanceObject(self, data):
+        codeInstances = []
+        for row in data:
+            code = Code(row[0], row[1], row[2])
+            codeInstance = CodeInstance(row[3], row[4], row[5], row[6], code)
+            codeInstances.append(codeInstance)
+        return codeInstances
+
+    def deleteCodeInstance(self, instanceId):
+        sql = """DELETE FROM codeinstance WHERE id=:id"""
+        self.cursor.execute(sql, {'id': instanceId})
+        self.conn.commit()
+
+    def getProjectCodeInstances(self, projectID):
+        sql = """SELECT code.id, 
+                        code.name, 
+                        code.color,
+                        codeinstance.id,
+                        codeinstance.text,
+                        codeinstance.start,
+                        codeinstance.end
+                FROM codeinstance 
+                INNER JOIN document ON codeinstance.document = document.id
+                INNER JOIN code ON codeinstance.code = code.id 
+                WHERE document.project=:projectID"""
+        self.cursor.execute(sql, {'projectID': projectID})
+        data = self.cursor.fetchall()
+        return self.buildCodeInstanceObject(data)
