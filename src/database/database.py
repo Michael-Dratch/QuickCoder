@@ -1,6 +1,5 @@
 import sqlite3
-from src.datastructures.datastructures import Code, Project
-
+from src.datastructures import Code, Project, Document
 
 
 class Database:
@@ -46,7 +45,8 @@ class Database:
 
     def createCodeTable(self):
         self.createTable('code', '(id integer PRIMARY KEY, '
-                                 'name text, color text, '
+                                 'name text, '
+                                 'color text, '
                                  'project integer,'
                                  'FOREIGN KEY (project) REFERENCES project (id)) ')
 
@@ -69,6 +69,11 @@ class Database:
         self.cursor.execute(sql, {'project': projectID, 'name': name, 'color': color})
         self.conn.commit()
 
+    def getProjectIDFromName(self, projectName):
+        self.cursor.execute("""SELECT * FROM project WHERE name=:projectName""", {'projectName': projectName})
+        projectID = self.cursor.fetchone()
+        return projectID
+
     def codeExistsByID(self, codeID):
         self.cursor.execute("""SELECT * FROM code WHERE id=:codeID""",
                             {'codeID': codeID})
@@ -76,16 +81,18 @@ class Database:
         return len(codes) > 0
 
     def codeExistsByName(self, name, projectID):
-        self.cursor.execute("""SELECT * FROM code WHERE name=:name AND
-                                    project=:projectID""",
+        self.cursor.execute("""SELECT * FROM code 
+                                WHERE name=:name AND project=:projectID""",
                             {'name': name, 'projectID': projectID})
         codes = self.cursor.fetchall()
         return len(codes) > 0
 
-    def deleteCode(self, codeId):
-        sql = """DELETE FROM code WHERE id=:codeId"""
-        self.cursor.execute(sql, {'codeId': codeId})
-        self.conn.commit()
+    def deleteCode(self, codeID):
+        if self.codeExistsByID(codeID):
+            sql = """DELETE FROM code 
+                        WHERE id = :codeID"""
+            self.cursor.execute(sql, {'codeID': codeID})
+            self.conn.commit()
 
     def updateCode(self, codeId, name, color):
         sql = """UPDATE code
@@ -103,7 +110,7 @@ class Database:
         data = self.cursor.fetchall()
         codes = []
         for row in data:
-            code = Code(row[0], row[1], row[2], row[3])
+            code = Code(row[0], row[1], row[2])
             codes.append(code)
         return codes
 
@@ -150,6 +157,7 @@ class Database:
             project = Project(object[0], object[1])
             projects.append(project)
         return projects
+
     def createDocument(self, name, projectID):
         if self.documentExistsByName(name, projectID):
             raise Exception('Document name already exists')
@@ -183,3 +191,12 @@ class Database:
         self.cursor.execute(sql, {'documentID': documentID})
         self.conn.commit()
 
+    def getProjectDocuments(self, projectID):
+        sql = """SELECT * FROM document WHERE project=:projectID"""
+        self.cursor.execute(sql, {'projectID': projectID})
+        data = self.cursor.fetchall()
+        docs = []
+        for docObject in data:
+            document = Document(docObject[0], docObject[1])
+            docs.append(document)
+        return docs

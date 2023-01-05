@@ -1,7 +1,8 @@
 import sqlite3
 import unittest
-
+from src.datastructures import *
 from src.database.database import Database
+
 
 class TestBase(unittest.TestCase):
 
@@ -13,8 +14,6 @@ class TestBase(unittest.TestCase):
         self.db.initializeTables()
 
     def tearDown(self):
-        self.cursor.execute("""DELETE FROM code;""")
-        self.conn.commit()
         self.db.closeConnection()
 
     def assertTableExists(self, name):
@@ -40,8 +39,8 @@ class TestBase(unittest.TestCase):
         data = self.cursor.fetchall()
         return len(data) == 1
 
-    def projectExists(self, projectID):
-        self.cursor.execute("""SELECT * FROM project WHERE id=:projectID""", {'projectID': projectID})
+    def projectExists(self, name):
+        self.cursor.execute("""SELECT * FROM project WHERE name=:name""", {'name': name})
         data = self.cursor.fetchall()
         return len(data) == 1
 
@@ -56,7 +55,6 @@ class TestBase(unittest.TestCase):
                             {'name': name})
         data = self.cursor.fetchall()
         return len(data) == 1
-
 
     def getNumRows(self, tableName):
         self.cursor.execute("""SELECT * FROM {}""".format(tableName))
@@ -95,14 +93,14 @@ class ProjectTableTest(TestBase):
     def test_create_project(self):
         self.db.createProject('test_project')
         projects = self.db.getProjects()
-        self.assertTrue(self.projectExists(projects[0].id))
+        self.assertTrue(self.projectExists('test_project'))
 
     def test_creating_duplicate_project_fails(self):
         self.db.createProject('project')
         with self.assertRaises(Exception):
             self.db.createProject('project')
 
-    def test_delete_non_existent_project(self):
+    def test_delete_non_existent_project_does_nothing(self):
         self.db.deleteProject('project')
 
     def test_delete_project(self):
@@ -111,8 +109,8 @@ class ProjectTableTest(TestBase):
         projects = self.db.getProjects()
         self.assertEqual(len(projects), 0)
 
-    def test_update_non_existent_project_fails(self):
-        self.db.updateProject('oldName', 'newName')
+    def test_update_non_existent_project_does_nothing(self):
+        self.db.updateProject(1, 'newName')
 
     def test_update_project_name(self):
         self.db.createProject('oldName')
@@ -120,7 +118,7 @@ class ProjectTableTest(TestBase):
         projects = self.db.getProjects()
         self.assertEqual(projects[0].name, 'newName')
 
-
+#
 class DocumentTableTest(TestBase):
 
     def setUp(self):
@@ -169,6 +167,16 @@ class DocumentTableTest(TestBase):
         self.db.deleteDocument(1)
         self.assertFalse(self.documentExistsByID(1))
 
+    def test_get_documents_no_docs(self):
+        documents = self.db.getProjectDocuments(1)
+        self.assertEqual(len(documents), 0)
+
+    def test_get_documents(self):
+        self.db.createDocument('doc1', 1)
+        self.db.createDocument('doc2', 1)
+        docs = self.db.getProjectDocuments(1)
+        self.assertEqual(len(docs), 2)
+
 
 
 class CodeTableTest(TestBase):
@@ -188,7 +196,7 @@ class CodeTableTest(TestBase):
 
     def test_delete_code(self):
         self.db.createCode('positive', '#00FF00', 1)
-        self.db.deleteCode(codeId=1)
+        self.db.deleteCode(codeID=1)
         self.assertEqual(0, self.getNumRows('code'))
 
     def test_update_code_name(self):
@@ -201,7 +209,20 @@ class CodeTableTest(TestBase):
         self.assertTrue(self.codeExistsByName(newName))
 
 
+# class CodeInstanceTableTest(TestBase):
+#
+#     def setUp(self):
+#         super().setUp()
+#         self.db.createProject('test_project')
+#         self.db.createCode('code', '#FF00FF', 1)
+#         self.db.createDocument('doc', 1)
+
+    # def test_create_code_instance(self):
+    #
+    #     self.db.createCodeInstance()
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
-
