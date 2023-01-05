@@ -1,6 +1,6 @@
 import sqlite3
-from datastructures.code import Code
-import os
+from src.datastructures.datastructures import Code, Project
+
 
 
 class Database:
@@ -9,8 +9,8 @@ class Database:
         self.conn = None
         self.cursor = None
 
-    def initializeDatabase(self):
-        self.createConnection()
+    def initializeDatabase(self, filename):
+        self.createConnection(filename)
         self.cursor.execute("""PRAGMA foreign_keys = ON""")
         self.conn.commit()
 
@@ -41,8 +41,8 @@ class Database:
         self.createTable('document', '(id integer PRIMARY KEY, '
                                      'name text, '
                                      'html text, '
-                                     'project_id integer, '
-                                     'FOREIGN KEY (project_id) REFERENCES project (id))')
+                                     'project integer, '
+                                     'FOREIGN KEY (project) REFERENCES project (id))')
 
     def createCodeTable(self):
         self.createTable('code', '(id integer PRIMARY KEY, '
@@ -62,15 +62,23 @@ class Database:
         self.cursor.execute(sql)
         self.conn.commit()
 
-    def createCode(self, name, color, projectId):
-        if self.codeExists(name):
+    def createCode(self, name, color, projectID):
+        if self.codeExistsByName(name, projectID):
             raise Exception('Code name already exists')
         sql = """INSERT INTO code (id, name, color, project) VALUES (NULL, :name, :color, :project)"""
-        self.cursor.execute(sql, {'project': projectId, 'name': name, 'color': color})
+        self.cursor.execute(sql, {'project': projectID, 'name': name, 'color': color})
         self.conn.commit()
 
-    def codeExists(self, name):
-        self.cursor.execute("""SELECT * FROM code WHERE name=:name""", {'name': name})
+    def codeExistsByID(self, codeID):
+        self.cursor.execute("""SELECT * FROM code WHERE id=:codeID""",
+                            {'codeID': codeID})
+        codes = self.cursor.fetchall()
+        return len(codes) > 0
+
+    def codeExistsByName(self, name, projectID):
+        self.cursor.execute("""SELECT * FROM code WHERE name=:name AND
+                                    project=:projectID""",
+                            {'name': name, 'projectID': projectID})
         codes = self.cursor.fetchall()
         return len(codes) > 0
 
@@ -100,31 +108,78 @@ class Database:
         return codes
 
     def createProject(self, name):
-        if self.project_exists(name):
+        if self.projectExistsByName(name):
             raise Exception('Project name already exists')
         sql = """INSERT INTO project (id, name) VALUES (NULL, :name)"""
         self.cursor.execute(sql, {'name': name})
         self.conn.commit()
 
-    def project_exists(self, name):
+    def projectExists(self, projectID):
+        self.cursor.execute("""SELECT * FROM project WHERE id=:projectID""", {'projectID': projectID})
+        projects = self.cursor.fetchall()
+        return len(projects) > 0
+
+    def projectExistsByName(self, name):
         self.cursor.execute("""SELECT * FROM project WHERE name=:name""", {'name': name})
         projects = self.cursor.fetchall()
         return len(projects) > 0
 
-    def deleteProject(self, name):
-        if not self.project_exists(name):
+    def deleteProject(self, projectID):
+        if not self.projectExists(projectID):
             return
-        sql = """DELETE FROM project WHERE name=:name"""
-        self.cursor.execute(sql, {'name': name})
+        sql = """DELETE FROM project WHERE id=:projectID"""
+        self.cursor.execute(sql, {'projectID': projectID})
         self.conn.commit()
 
-    def updateProject(self, oldName, newName):
-        if not self.project_exists(oldName):
+    def updateProject(self, projectID, newName):
+        if not self.projectExists(projectID):
             return
         sql = """UPDATE project
                     SET name = :newName
-                    WHERE name = :oldName"""
+                    WHERE id = :projectID"""
         self.cursor.execute(sql, {'newName': newName,
-                                  'oldName': oldName})
+                                  'projectID': projectID})
+        self.conn.commit()
+
+    def getProjects(self):
+        sql = """SELECT * FROM project"""
+        self.cursor.execute(sql)
+        data = self.cursor.fetchall()
+        projects = []
+        for object in data:
+            project = Project(object[0], object[1])
+            projects.append(project)
+        return projects
+    def createDocument(self, name, projectID):
+        if self.documentExistsByName(name, projectID):
+            raise Exception('Document name already exists')
+        sql = """INSERT INTO document (id, name, project) VALUES (NULL, :name, :project)"""
+        self.cursor.execute(sql, {'name': name, 'project': projectID})
+        self.conn.commit()
+
+    def documentExistsByID(self, documentID):
+        self.cursor.execute("""SELECT * FROM document WHERE id=:documentID""",
+                            {'documentID': documentID})
+        documents = self.cursor.fetchall()
+        return len(documents) > 0
+
+    def documentExistsByName(self, name, projectID):
+        self.cursor.execute("""SELECT * FROM document WHERE name=:name AND project=:projectID""",
+                            {'name': name, 'projectID': projectID})
+        documents = self.cursor.fetchall()
+        return len(documents) > 0
+
+    def updateDocument(self, documentID, newName, projectID):
+        if self.documentExistsByName(newName, projectID):
+            raise Exception("Document name already exists")
+        sql = """UPDATE document
+                           SET name = :newName
+                           WHERE id = :id"""
+        self.cursor.execute(sql, {'newName': newName, 'id': documentID})
+        self.conn.commit()
+
+    def deleteDocument(self, documentID):
+        sql = """DELETE FROM document WHERE id=:documentID"""
+        self.cursor.execute(sql, {'documentID': documentID})
         self.conn.commit()
 
