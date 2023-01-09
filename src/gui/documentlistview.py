@@ -1,10 +1,9 @@
 from functools import partial
 
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QMenu, QListWidget, QDialog, QDialogButtonBox, \
-    QListWidgetItem, QLineEdit
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QMenu, QListWidget, QDialog, QDialogButtonBox, QLineEdit
+
 from PyQt6 import QtCore, QtGui
-from docselectbutton import DocSelectButton
+
 
 
 class DocumentListView(QListWidget):

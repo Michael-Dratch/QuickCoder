@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QHBoxLayout
 from src.gui.mainwindow import MainWindow
-from src.gui.projectview import ProjectView
 from src.gui.documentlistview import DocumentListView
 
 

@@ -11,3 +11,12 @@ class ProjectController:
 
     def setDatabase(self, database):
         self.database = database
+
+    def changeDocName(self, doc, newName):
+        print("changing doc name")
+
+    def changeSelectedDoc(self, doc):
+        print('current doc ' + doc.name)
+    def deleteDoc(self, doc):
+        print('deleting ' + doc.name)
+
