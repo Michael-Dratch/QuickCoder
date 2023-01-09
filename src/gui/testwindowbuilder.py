@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QHBoxLayout
 from src.gui.mainwindow import MainWindow
 from src.gui.projectview import ProjectView
+from src.gui.documentlistview import DocumentListView
 
 
 class TestWindowBuilder:
@@ -17,14 +18,17 @@ class TestWindowBuilder:
         return window
 
     def initializeComponents(self, window):
-        self.projectView = ProjectView(self.printSelected, self.saveNewName)
+        self.projectView = DocumentListView(self.printSelected, self.saveNewName, self.deleteDoc)
         layout = QHBoxLayout()
         layout.addWidget(self.projectView)
         window.setLayout(layout)
 
     def printSelected(self, doc):
-        print(doc.name)
+        print(doc.name + 'selected')
 
     def saveNewName(self, doc, name):
         print(doc.name)
         print(name)
+
+    def deleteDoc(self, doc):
+        print(doc.name, 'deleted')

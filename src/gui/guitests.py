@@ -20,7 +20,6 @@ if __name__ == "__main__":
     projectView = builder.projectView
     projectView.setDocuments(docs)
     projectView.setCurrentDoc(docs[0])
-    projectView.createButtons()
     GUI.show()
     sys.exit(app.exec())
 
