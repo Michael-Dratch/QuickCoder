@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QHBoxLayout
 from src.gui.mainwindow import MainWindow
-from src.gui.documentlistview import DocumentListView
+from src.gui.codelistview import CodeListView
 
 
 class TestWindowBuilder:
@@ -17,17 +17,18 @@ class TestWindowBuilder:
         return window
 
     def initializeComponents(self, window):
-        self.projectView = DocumentListView(self.printSelected, self.saveNewName, self.deleteDoc)
+        self.codeListView = CodeListView(self.newCodeSelected, self.updateCode, self.deleteCode)
         layout = QHBoxLayout()
-        layout.addWidget(self.projectView)
+        layout.addWidget(self.codeListView)
         window.setLayout(layout)
 
-    def printSelected(self, doc):
+    def newCodeSelected(self, doc):
         print(doc.name + 'selected')
 
-    def saveNewName(self, doc, name):
-        print(doc.name)
-        print(name)
+    def updateCode(self, code, newName, newColor):
+        print('updating')
+        print(newName)
+        print(newColor)
 
-    def deleteDoc(self, doc):
-        print(doc.name, 'deleted')
+    def deleteCode(self, code):
+        print(code.name, 'deleted')

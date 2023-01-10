@@ -1,9 +1,9 @@
 from functools import partial
 
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QMenu, QListWidget, QDialog, QDialogButtonBox, QLineEdit
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QMenu, QListWidget, QDialog, QDialogButtonBox, \
+    QLineEdit
 
 from PyQt6 import QtCore, QtGui
-
 
 
 class DocumentListView(QListWidget):
@@ -18,12 +18,11 @@ class DocumentListView(QListWidget):
         self.documents = []
         self.currentItemChanged.connect(self.itemClicked)
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(partial(self.on_context_menu))
+        self.customContextMenuRequested.connect(self.on_context_menu)
 
     def itemClicked(self, item):
         doc = self.getDocByName(item.text())
         self.docSelectedHandler(doc)
-
 
     def setDocuments(self, documents):
         self.documents = documents
@@ -32,17 +31,6 @@ class DocumentListView(QListWidget):
 
     def setCurrentDoc(self, document):
         self.currentDoc = document
-
-
-    def showOptions(self, item):
-        self.options = QMenu(self)
-        editAction = QtGui.QAction('edit name', self)
-        deleteAction = QtGui.QAction('delete document', self)
-        self.options.addAction(editAction)
-        self.options.addAction(deleteAction)
-        editAction.triggered.connect(self.showEditWindow)
-        deleteAction.triggered.connect(partial(self.showDeleteDialog, item))
-        self.options.exec(self.mapToGlobal())
 
     def createContextMenu(self, docName):
         self.popMenu = QMenu(self)
@@ -53,7 +41,6 @@ class DocumentListView(QListWidget):
         editAction.triggered.connect(partial(self.showEditWindow, docName))
         deleteAction.triggered.connect(partial(self.showDeleteDialog, docName))
 
-
     def on_context_menu(self, point):
         docName = self.itemAt(point).text()
         self.createContextMenu(docName)
@@ -62,7 +49,6 @@ class DocumentListView(QListWidget):
     def showEditWindow(self, docName):
         self.createEditNameWindow(docName)
         self.editPopUp.show()
-
 
     def createEditNameWindow(self, docName):
         nameField = QLineEdit()
@@ -84,7 +70,6 @@ class DocumentListView(QListWidget):
         self.saveDocNameHandler(doc, text)
         self.editPopUp.close()
 
-
     def showDeleteDialog(self, docName):
         dlg = DeleteDocumentDialog(docName)
         print('creating object')
@@ -98,7 +83,6 @@ class DocumentListView(QListWidget):
         for doc in self.documents:
             if doc.name == docName:
                 return doc
-
 
 
 class DeleteDocumentDialog(QDialog):
@@ -117,5 +101,3 @@ class DeleteDocumentDialog(QDialog):
         self.layout.addWidget(message)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
-
-

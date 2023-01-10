@@ -4,7 +4,7 @@ from src.gui.documentlistview import DocumentListView
 from src.gui.mainwindow import MainWindow
 from src.gui.menubar import MenuBar
 from src.gui.editor import Editor
-from src.gui.codeview import CodeView
+# from src.gui.codeview import CodeView
 
 
 class MainWindowBuilder:
@@ -28,11 +28,11 @@ class MainWindowBuilder:
                                             self.controller.deleteDoc)
 
         window.editor = Editor(window)
-        window.codeView = CodeView()
+        # window.codeView = CodeView()
         innerLayout = QHBoxLayout()
         innerLayout.addWidget(window.documentListView)
         innerLayout.addWidget(window.editor)
-        innerLayout.addWidget(window.codeView)
+        # innerLayout.addWidget(window.codeView)
         outerLayout = QVBoxLayout()
         outerLayout.addWidget(menuBar)
         outerLayout.addLayout(innerLayout)
