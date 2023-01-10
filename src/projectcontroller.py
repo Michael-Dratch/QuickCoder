@@ -20,3 +20,11 @@ class ProjectController:
     def deleteDoc(self, doc):
         print('deleting ' + doc.name)
 
+    def changeSelectedCode(self, code):
+        print('selected code ' + code.name)
+
+    def updateCode(self, code, newName, color):
+        print('updated code name: ' + newName + ' color: ' + color)
+
+    def deleteCode(self, code):
+        print('deleting code: ' + code.name)

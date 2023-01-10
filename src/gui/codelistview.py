@@ -2,14 +2,15 @@ from functools import partial
 
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor, QPixmap, QIcon
 from PyQt6.QtWidgets import QDockWidget, QLabel, QVBoxLayout, QWidget, QListWidget, QMenu, QDialog, QDialogButtonBox, \
-    QLineEdit
-from colorpanel import ColorPanel
+    QLineEdit, QListWidgetItem, QPushButton, QHBoxLayout, QColorDialog
 
 
 class CodeListView(QListWidget):
     def __init__(self, codeSelectedHandler, updateCodeHandler, deleteCodeHandler):
         super().__init__()
+        self.editWindow = None
         self.currentDoc = None
         self.codeSelectedHandler = codeSelectedHandler
         self.updateCodeHandler = updateCodeHandler
@@ -27,7 +28,16 @@ class CodeListView(QListWidget):
     def setCodes(self, codes):
         self.codes = codes
         for code in self.codes:
-            self.addItem(code.name)
+            item = QListWidgetItem(code.name, self)
+            icon = self.createColorIcon(code.color)
+            item.setIcon(icon)
+            self.addItem(item)
+
+    def createColorIcon(self, color):
+        pixMap = QPixmap(20, 20)
+        pixMap.fill(QColor(color))
+        icon = QIcon(pixMap)
+        return icon
 
     def setCurrentDoc(self, document):
         self.currentDoc = document
@@ -47,36 +57,9 @@ class CodeListView(QListWidget):
         self.popMenu.exec(self.mapToGlobal(point))
 
     def showEditWindow(self, codeName):
-        self.createEditWindow(codeName)
-        self.editPopUp.show()
-
-    def createEditWindow(self, codeName):
         code = self.getCodeByName(codeName)
-        nameField = QLineEdit()
-        nameField.setText(code.name)
-        colorLabel = QLabel("""Color: {}""".format(code.color))
-        changeColorButton = QPushButton('Change color')
-        changeColorButton.clicked.connect(self.showColorDiolog)
-        color = QColorDialog.getColor()
-        saveButton = QPushButton('save')
-        saveButton.clicked.connect(partial(self.saveName, docName, nameField))
-        layout = QVBoxLayout()
-        layout.addWidget(nameField)
-        layout.addWidget(saveButton)
-
-        self.editPopUp = QWidget()
-        self.editPopUp.setLayout(layout)
-
-    def showColorDiolog(self, oldColor):
-        colorDialog = QColorDi
-
-    def saveName(self, docName, nameField):
-        text = nameField.text()
-        if text == '':
-            return
-        doc = self.getDocByName(docName)
-        self.saveDocNameHandler(doc, text)
-        self.editPopUp.close()
+        self.editWindow = EditCodeWindow(code, self.updateCodeHandler)
+        self.editWindow.show()
 
     def showDeleteDialog(self, codeName):
         dialog = DeleteCodeDialog(codeName)
@@ -91,6 +74,77 @@ class CodeListView(QListWidget):
             if code.name == codeName:
                 return code
 
+
+class EditCodeWindow(QWidget):
+    def __init__(self, code, updateCodeHandler):
+        super().__init__()
+        self.code = code
+        self.colorSquareLabel = None
+        self.name = code.name
+        self.color = code.color
+        self.updateCodeHandler = updateCodeHandler
+        self.setUpEditForm(code)
+
+
+    def setUpEditForm(self, code):
+        nameLayout = self.createEditNameLayout(code)
+        colorLayout = self.createEditColorLayout(code)
+        saveButton = QPushButton('save')
+        saveButton.clicked.connect(partial(self.saveUpdatedCode, code))
+        layout = QVBoxLayout()
+        layout.addLayout(nameLayout)
+        layout.addLayout(colorLayout)
+        layout.addWidget(saveButton)
+        self.setLayout(layout)
+
+    def createEditNameLayout(self, code):
+        nameLabel = QLabel('code name: ')
+        self.nameField = QLineEdit()
+        self.nameField.setText(code.name)
+        nameLayout = QHBoxLayout()
+        nameLayout.addWidget(nameLabel)
+        nameLayout.addWidget(self.nameField)
+        return nameLayout
+    def createEditColorLayout(self, code):
+        colorLabel = QLabel('Color: ')
+        self.colorSquareLabel = self.createColorSquareWidget(code.color)
+        changeColorButton = QPushButton('Change color')
+        changeColorButton.clicked.connect(self.openColorDialog)
+        self.colorLayout = QHBoxLayout()
+        self.colorLayout.addWidget(colorLabel)
+        self.colorLayout.addWidget(self.colorSquareLabel)
+        self.colorLayout.addWidget(changeColorButton)
+        return self.colorLayout
+
+    def createColorSquareWidget(self, color):
+        colorPixMap = self.createPixMap(color)
+        colorSquareLabel = QLabel()
+        colorSquareLabel.setPixmap(colorPixMap)
+        return colorSquareLabel
+
+    def openColorDialog(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.setColor(color.name())
+            
+    def setColor(self, color):
+        self.colorLayout.removeWidget(self.colorSquareLabel)
+        self.colorSquareLabel.setParent(None)
+        self.colorSquareLabel = self.createColorSquareWidget(color)
+        self.colorLayout.insertWidget(1, self.colorSquareLabel)
+        self.color = color
+
+    def createPixMap(self, color):
+        pixMap = QPixmap(20, 20)
+        pixMap.fill(QColor(color))
+        return pixMap
+
+    def saveUpdatedCode(self, code):
+        newName = self.nameField.text()
+        if newName == '':
+            return
+        self.updateCodeHandler(code, newName, self.color)
+        self.close()
 
 class DeleteCodeDialog(QDialog):
     def __init__(self, codeName):

@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QTabWidget, QDockWidget, QVBoxLayout
 
+from src.gui.codelistview import CodeListView
 from src.gui.documentlistview import DocumentListView
 from src.gui.mainwindow import MainWindow
 from src.gui.menubar import MenuBar
@@ -26,11 +27,18 @@ class MainWindowBuilder:
         window.documentListView = DocumentListView(self.controller.changeSelectedDoc,
                                             self.controller.changeDocName,
                                             self.controller.deleteDoc)
+        window.codeListView = CodeListView(self.controller.changeSelectedCode,
+                                           self.controller.updateCode,
+                                           self.controller.deleteCode)
 
         window.editor = Editor(window)
+
+        projectLayout = QVBoxLayout()
+        projectLayout.addWidget(window.documentListView)
+        projectLayout.addWidget(window.codeListView)
         # window.codeView = CodeView()
         innerLayout = QHBoxLayout()
-        innerLayout.addWidget(window.documentListView)
+        innerLayout.addLayout(projectLayout)
         innerLayout.addWidget(window.editor)
         # innerLayout.addWidget(window.codeView)
         outerLayout = QVBoxLayout()
