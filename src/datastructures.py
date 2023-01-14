@@ -12,10 +12,10 @@ class Code:
 
 
 class Document:
-    def __init__(self, id, name):
+    def __init__(self, id, name, html):
         self.id = id
         self.name = name
-        self.html = ""
+        self.html = html
 
     def setName(self, name):
         self.name = name
@@ -38,4 +38,6 @@ class CodeInstance:
         self.end = end
         self.code = code
 
+    def toString(self):
+        print(self.text + ' start: ' + str(self.start) + ' end: ' + str(self.end) + '\n')
 

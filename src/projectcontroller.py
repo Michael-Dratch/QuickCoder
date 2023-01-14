@@ -28,3 +28,9 @@ class ProjectController:
 
     def deleteCode(self, code):
         print('deleting code: ' + code.name)
+
+    def saveCodeInstances(self, codeInstances):
+        print('saving codes')
+
+    def createCodeInstance(self, start, end, text):
+        print('creating code instance')

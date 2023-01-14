@@ -31,7 +31,7 @@ class MainWindowBuilder:
                                            self.controller.updateCode,
                                            self.controller.deleteCode)
 
-        window.editor = Editor(window)
+        window.editor = Editor(window, self.controller.createCodeInstance, self.controller.saveCodeInstances)
 
         projectLayout = QVBoxLayout()
         projectLayout.addWidget(window.documentListView)

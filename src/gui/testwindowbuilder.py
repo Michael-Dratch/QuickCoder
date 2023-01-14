@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QHBoxLayout
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton
 
 from src.datastructures import Code, CodeInstance
 from src.gui.editor import Editor
@@ -24,9 +24,23 @@ class TestWindowBuilder:
 
     def initializeComponents(self, window):
         self.editor = Editor(window, self.createCodeInstanceHandler)
-        layout = QHBoxLayout()
+        highlightAllButton = QPushButton('Highlight All Instances')
+        highlightAllButton.clicked.connect(self.editor.highlightAllCodeInstances)
+        removeHighlightsButton = QPushButton('Remove Highlights')
+        removeHighlightsButton.clicked.connect(self.editor.removeAllHighlights)
+        printInstancesButton = QPushButton('Print instances')
+        printInstancesButton.clicked.connect(self.printInstances)
+        layout = QVBoxLayout()
         layout.addWidget(self.editor)
+        layout.addWidget(highlightAllButton)
+        layout.addWidget(removeHighlightsButton)
+        layout.addWidget(printInstancesButton)
         window.setLayout(layout)
+
+    def printInstances(self):
+        instances = self.editor.codeInstances
+        for instance in instances:
+            print(instance.toString())
 
 
 

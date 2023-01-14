@@ -10,8 +10,8 @@ from database.database import Database
 
 # testing functions
 def getNewDocList():
-    doc1 = Document(1, 'doc1')
-    doc2 = Document(2, 'doc2')
+    doc1 = Document(1, 'doc1', "")
+    doc2 = Document(2, 'doc2', "")
     return [doc1, doc2]
 
 def getNewCodeList():

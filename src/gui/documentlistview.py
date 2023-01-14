@@ -72,7 +72,6 @@ class DocumentListView(QListWidget):
 
     def showDeleteDialog(self, docName):
         dlg = DeleteDocumentDialog(docName)
-        print('creating object')
         if dlg.exec():
             doc = self.getDocByName(docName)
             self.deleteDocHandler(doc)
