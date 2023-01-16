@@ -1,15 +1,13 @@
 from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton
 
 from src.datastructures import Code, CodeInstance
+from src.gui.codeinstancesview import CodeInstanceView
 from src.gui.editor import Editor
 from src.gui.mainwindow import MainWindow
 from src.gui.codelistview import CodeListView
 
 
 class TestWindowBuilder:
-
-    def __init__(self, createCodeInstanceHandler):
-        self.createCodeInstanceHandler = createCodeInstanceHandler
 
     def build(self):
         window = MainWindow()
@@ -23,32 +21,18 @@ class TestWindowBuilder:
         return window
 
     def initializeComponents(self, window):
-        self.editor = Editor(window, self.createCodeInstanceHandler)
-        highlightAllButton = QPushButton('Highlight All Instances')
-        highlightAllButton.clicked.connect(self.editor.highlightAllCodeInstances)
-        removeHighlightsButton = QPushButton('Remove Highlights')
-        removeHighlightsButton.clicked.connect(self.editor.removeAllHighlights)
-        printInstancesButton = QPushButton('Print instances')
-        printInstancesButton.clicked.connect(self.printInstances)
+        self.instanceView = CodeInstanceView()
         layout = QVBoxLayout()
-        layout.addWidget(self.editor)
-        layout.addWidget(highlightAllButton)
-        layout.addWidget(removeHighlightsButton)
-        layout.addWidget(printInstancesButton)
+        layout.addWidget(self.instanceView)
         window.setLayout(layout)
 
-    def printInstances(self):
-        instances = self.editor.codeInstances
-        for instance in instances:
-            print(instance.toString())
 
-
-
-def createCodeInstance():
-    instance1 = CodeInstance(1,
-                            'd be form’d, till the ductile anchor hold, Till the gossamer thread you fling catch somewhere, O',
-                            447, 543, Code(1, 'code1', '#FFAAAA'))
-    instance2 = CodeInstance(2,
-                             'sdlfisdj',
-                             5, 10, Code(2, 'code2', "#AAAAEE"))
-    return [instance1, instance2]
+#
+# def createCodeInstance():
+#     instance1 = CodeInstance(1,
+#                             'd be form’d, till the ductile anchor hold, Till the gossamer thread you fling catch somewhere, O',
+#                             447, 543, Code(1, 'code1', '#FFAAAA'))
+#     instance2 = CodeInstance(2,
+#                              'sdlfisdj',
+#                              5, 10, Code(2, 'code2', "#AAAAEE"))
+#     return [instance1, instance2]

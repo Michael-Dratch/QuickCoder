@@ -57,6 +57,7 @@ class Database:
                                          'text text, '
                                          'start integer,'
                                          'end integer,'
+                                         'sentiment text,'
                                          'FOREIGN KEY (document) REFERENCES document (id), '
                                          'FOREIGN KEY (code) REFERENCES code (id)) ')
 
@@ -197,18 +198,19 @@ class Database:
         data = self.cursor.fetchall()
         docs = []
         for docObject in data:
-            document = Document(docObject[0], docObject[1])
+            document = Document(docObject[0], docObject[1], "")
             docs.append(document)
         return docs
 
-    def createCodeInstance(self, documentID, codeID, text, start, end):
-        sql = """INSERT INTO codeinstance (id, document, code, text, start, end) 
-                    VALUES (NULL, :documentID, :codeID, :text, :start, :end)"""
+    def createCodeInstance(self, documentID, codeID, text, start, end, sentiment):
+        sql = """INSERT INTO codeinstance (id, document, code, text, start, end, sentiment) 
+                    VALUES (NULL, :documentID, :codeID, :text, :start, :end, :sentiment)"""
         self.cursor.execute(sql, {'documentID': documentID,
                                   'codeID': codeID,
                                   'text': text,
                                   'start': start,
-                                  'end': end})
+                                  'end': end,
+                                  'sentiment': sentiment})
         self.conn.commit()
 
     def getDocumentCodeInstances(self, documentID):
@@ -218,7 +220,8 @@ class Database:
                         codeinstance.id,
                         codeinstance.text,
                         codeinstance.start,
-                        codeinstance.end
+                        codeinstance.end,
+                        codeinstance.sentiment
                 FROM codeinstance 
                 INNER JOIN code ON codeinstance.code = code.id 
                 WHERE document=:documentID"""
@@ -230,7 +233,7 @@ class Database:
         codeInstances = []
         for row in data:
             code = Code(row[0], row[1], row[2])
-            codeInstance = CodeInstance(row[3], row[4], row[5], row[6], code)
+            codeInstance = CodeInstance(row[3], row[4], row[5], row[6], row[7], code)
             codeInstances.append(codeInstance)
         return codeInstances
 
@@ -246,7 +249,8 @@ class Database:
                         codeinstance.id,
                         codeinstance.text,
                         codeinstance.start,
-                        codeinstance.end
+                        codeinstance.end,
+                        codeinstance.sentiment
                 FROM codeinstance 
                 INNER JOIN document ON codeinstance.document = document.id
                 INNER JOIN code ON codeinstance.code = code.id 

@@ -21,10 +21,10 @@ class TestGUI(unittest.TestCase):
     def createCodeInstances(self):
         instance1 = CodeInstance(1,
                                  'd be form’d, till the ductile anchor hold, Till the gossamer thread you fling catch somewhere, O',
-                                 447, 543, Code(1, 'code1', '#FFAAAA'))
+                                 447, 543, None, Code(1, 'code1', '#FFAAAA'))
         instance2 = CodeInstance(2,
                                  'sdlfisdj',
-                                 5, 10, Code(2, 'code2', "#AAAAEE"))
+                                 5, 10, None, Code(2, 'code2', "#AAAAEE"))
         return [instance1, instance2]
 
     def createDocument(self):
@@ -79,7 +79,7 @@ class TestGUI(unittest.TestCase):
         self.assertCreateCodeHandlerCalledCorrectly(self.doc, end, start)
 
     def test_no_instance_changed_after_deletion_after_instance(self):
-        instanceBefore = CodeInstance(1, 'noi', 2, 5, self.code1)
+        instanceBefore = CodeInstance(1, 'noi', 2, 5, None, self.code1)
         self.editor.setCodeInstances([instanceBefore])
         self.selectTextRange(10, 15)
         self.editor.cut()
@@ -87,7 +87,7 @@ class TestGUI(unittest.TestCase):
         self.assertEqualRange(instanceAfter, instanceBefore)
 
     def test_no_instance_changed_after_insertion_after_instance(self):
-        instanceBefore = CodeInstance(1, 'noi', 2, 5, self.code1)
+        instanceBefore = CodeInstance(1, 'noi', 2, 5, None, self.code1)
         self.editor.setCodeInstances([instanceBefore])
         self.selectTextRange(10, 10)
         self.editor.insertHtml('insertion_text')
@@ -98,7 +98,7 @@ class TestGUI(unittest.TestCase):
         insertionText = 'insertion_text'
         startBeforeChange = 2
         endBeforeChange = 5
-        instanceBefore = CodeInstance(1, 'noi', startBeforeChange, endBeforeChange, self.code1)
+        instanceBefore = CodeInstance(1, 'noi', startBeforeChange, endBeforeChange, None, self.code1)
         self.editor.setCodeInstances([instanceBefore])
         self.selectTextRange(0,0)
         self.editor.insertHtml(insertionText)
@@ -110,7 +110,7 @@ class TestGUI(unittest.TestCase):
         startBeforeChange = 3
         endBeforeChange = 6
         charsDeleted = 2
-        instanceBefore = CodeInstance(1, 'ois', startBeforeChange, endBeforeChange, self.code1)
+        instanceBefore = CodeInstance(1, 'ois', startBeforeChange, endBeforeChange, None, self.code1)
         self.editor.setCodeInstances([instanceBefore])
         self.selectTextRange(0, charsDeleted)
         self.editor.cut()
@@ -122,7 +122,7 @@ class TestGUI(unittest.TestCase):
         insertionText = 'insertion_text'
         startBeforeChange = 2
         endBeforeChange = 6
-        instanceBefore = CodeInstance(1, 'nois', startBeforeChange, endBeforeChange, self.code1)
+        instanceBefore = CodeInstance(1, 'nois', startBeforeChange, endBeforeChange, None, self.code1)
         self.editor.setCodeInstances([instanceBefore])
         self.selectTextRange(3, 3)
         self.editor.insertHtml(insertionText)
@@ -135,7 +135,7 @@ class TestGUI(unittest.TestCase):
         startBeforeChange = 2
         endBeforeChange = 6
         charsDeleted = 2
-        instanceBefore = CodeInstance(1, 'nois', startBeforeChange, endBeforeChange, self.code1)
+        instanceBefore = CodeInstance(1, 'nois', startBeforeChange, endBeforeChange, None, self.code1)
         self.editor.setCodeInstances([instanceBefore])
         self.selectTextRange(3, 3 + charsDeleted)
         self.editor.cut()
@@ -149,7 +149,7 @@ class TestGUI(unittest.TestCase):
         endBeforeChange = 6
         charsDeleted = 4
         deletionPosition = 0
-        instanceBefore = CodeInstance(1, 'nois', startBeforeChange, endBeforeChange, self.code1)
+        instanceBefore = CodeInstance(1, 'nois', startBeforeChange, endBeforeChange, None, self.code1)
         self.editor.setCodeInstances([instanceBefore])
         self.selectTextRange(deletionPosition, deletionPosition + charsDeleted)
         self.editor.cut()
@@ -163,7 +163,7 @@ class TestGUI(unittest.TestCase):
         endBeforeChange = 6
         charsDeleted = 10
         deletionPosition = 3
-        instanceBefore = CodeInstance(1, 'nois', startBeforeChange, endBeforeChange, self.code1)
+        instanceBefore = CodeInstance(1, 'nois', startBeforeChange, endBeforeChange, None, self.code1)
         self.editor.setCodeInstances([instanceBefore])
         self.selectTextRange(deletionPosition, deletionPosition + charsDeleted)
         self.editor.cut()
