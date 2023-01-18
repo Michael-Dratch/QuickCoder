@@ -1,5 +1,7 @@
 from PyQt6.QtWidgets import *
 
+from src.gui.createcodewindow import CreateCodeWindow
+
 
 class GUI(QWidget):
     def __init__(self):
@@ -13,6 +15,9 @@ class GUI(QWidget):
     def setDocuments(self, docs):
         self.documentListView.setDocuments(docs)
 
+    def setCurrentDoc(self, doc):
+        self.documentListView.setCurrentDoc(doc)
+
     def setCodes(self, codes):
         self.codeListView.setCodes(codes)
 
@@ -21,3 +26,7 @@ class GUI(QWidget):
 
     def setProject(self, project):
         self.documentViewContainer.setProject(project)
+
+    def showCreateCodeWindow(self, codes, createNewCodeHandler):
+        self.createCodeWindow = CreateCodeWindow(codes, createNewCodeHandler)
+        self.createCodeWindow.show()

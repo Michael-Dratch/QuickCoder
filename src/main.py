@@ -44,16 +44,17 @@ if __name__=="__main__":
     app = QApplication(sys.argv)
     projectController = ProjectController()
 
-    projects = getProjectList()
-    projectView = ProjectView(projects, projectController.createNewProject, projectController.loadProject)
+    projectView = ProjectView([], projectController.createNewProject, projectController.loadProject)
 
 
     builder = MainWindowBuilder(projectController)
     GUI = builder.build()
     database = Database()
-    database.createConnection(':memory:')
+    database.initializeDatabase(':memory:')
+    database.initializeTables()
     projectController.setGUI(GUI)
     projectController.setDatabase(database)
+    projectController.setProjectView(projectView)
 
     # GUI.setDocuments(getNewDocList())
     # codes = getNewCodeList()
@@ -62,5 +63,5 @@ if __name__=="__main__":
     # GUI.setProject(getNewProject())
 
     #GUI.show()
-    projectView.show()
+    projectController.start()
     sys.exit(app.exec())

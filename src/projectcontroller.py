@@ -1,17 +1,27 @@
+from src.datastructures import Project, Document, Code
+from src.gui.createcodewindow import CreateCodeWindow
+
+
 class ProjectController:
     def __init__(self):
         self.GUI = None
+        self.projectView = None
         self.database = None
         self.currentProject = None
         self.currentDoc = None
         self.currentCode = None
+        self.projectCodes = None
 
+    def start(self):
+        self.projectView.show()
     def setGUI(self, gui):
         self.GUI = gui
 
     def setDatabase(self, database):
         self.database = database
 
+    def setProjectView(self, projectView):
+        self.projectView = projectView
     def hideDocumentView(self):
         print('hiding documentView')
 
@@ -19,6 +29,8 @@ class ProjectController:
         print('showing document view')
 
     def changeDocName(self, doc, newName):
+        self.database.updateDocument(doc.id, newName, self.currentProject.id)
+
         print("changing doc name")
 
     def changeSelectedDoc(self, doc):
@@ -44,8 +56,17 @@ class ProjectController:
     def createNewDocument(self):
         print('creating new document')
     def createNewProject(self, name):
-
-        print('creating new project: ' + name)
+        projectID = self.database.createProject(name)
+        self.currentProject = Project(projectID, name)
+        self.GUI.setProject(self.currentProject)
+        documentID = self.database.createDocument('New Document', projectID)
+        self.currentDoc = Document(documentID, 'New Document', '')
+        self.projectCodes = []
+        self.GUI.setCodes(self.projectCodes)
+        self.GUI.setDocuments([self.currentDoc])
+        self.GUI.setCurrentDoc(self.currentDoc)
+        self.GUI.show()
+        self.projectView.close()
 
     def loadProject(self, project):
         print('loading ' + project.name)
@@ -71,3 +92,10 @@ class ProjectController:
     def paste(self):
         print('paste')
 
+
+    def createCodeButtonHandler(self):
+        self.GUI.showCreateCodeWindow(self.projectCodes, self.createNewCode)
+
+    def createNewCode(self, name, color):
+        print(name)
+        print(color)

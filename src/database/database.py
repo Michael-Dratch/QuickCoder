@@ -123,6 +123,7 @@ class Database:
         sql = """INSERT INTO project (id, name) VALUES (NULL, :name)"""
         self.cursor.execute(sql, {'name': name})
         self.conn.commit()
+        return self.cursor.lastrowid
 
     def projectExists(self, projectID):
         self.cursor.execute("""SELECT * FROM project WHERE id=:projectID""", {'projectID': projectID})
@@ -180,7 +181,7 @@ class Database:
 
     def updateDocument(self, documentID, newName, projectID):
         if self.documentExistsByName(newName, projectID):
-            raise Exception("Document name already exists")
+            raise DuplicateNameError()
         sql = """UPDATE document
                            SET name = :newName
                            WHERE id = :id"""
@@ -258,3 +259,8 @@ class Database:
         self.cursor.execute(sql, {'projectID': projectID})
         data = self.cursor.fetchall()
         return self.buildCodeInstanceObject(data)
+
+
+class DuplicateNameError(Exception):
+    def __init__(self):
+        super().__init__()

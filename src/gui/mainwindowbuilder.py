@@ -1,5 +1,5 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSplitter, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSplitter, QSizePolicy, QPushButton
 
 from src.gui.codeinstancesview import CodeInstanceView
 from src.gui.codelistview import CodeListView
@@ -44,9 +44,12 @@ class MainWindowBuilder:
         codeWindow = QWidget()
         codeWindow.setMaximumWidth(400)
         codeLayout = QVBoxLayout()
+        newCodeBtn = QPushButton('Create New Code')
+        newCodeBtn.clicked.connect(self.controller.createCodeButtonHandler)
+        codeLayout.addWidget(newCodeBtn)
         codeLayout.addWidget(QLabel('Project codes:'))
         codeLayout.addWidget(gui.codeListView)
-        codeLayout.addWidget(QLabel('Selected code references:'))
+        codeLayout.addWidget(QLabel('Code references:'))
         codeLayout.addWidget(QLabel('Sentiment       Text'))
         codeLayout.addWidget(gui.codeInstanceView)
         codeWindow.setLayout(codeLayout)

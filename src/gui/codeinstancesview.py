@@ -30,6 +30,8 @@ class CodeInstanceView(QListWidget):
 
     def on_context_menu(self, point):
         item = self.itemAt(point)
+        if item == None:
+            return
         itemWidget = self.itemWidget(item)
         codeInstance = itemWidget.codeInstance
         rowID = self.row(item)

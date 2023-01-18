@@ -60,19 +60,18 @@ class CreateProjectWindow(QWidget):
 
     def createProjectClicked(self):
         name = self.nameField.text()
-        valid = self.isNameValid(name)
-        if not valid:
+        if name == "":
+            return
+        if self.nameExists(name):
             if not self.errorMessageShowing:
-                self.layout.insertWidget(1, QLabel('Invalid name: name either already exists or is empty'))
+                self.layout.insertWidget(1, QLabel('Name already exists'))
                 self.errorMessageShowing = True
         else:
             self.newProjectHandler(name)
             self.close()
 
-    def isNameValid(self, name):
-        if name == "":
-            return False
+    def nameExists(self, name):
         for project in self.projects:
             if name == project.name:
-                return False
-        return True
+                return True
+        return False

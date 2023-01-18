@@ -31,7 +31,12 @@ class DocumentListView(QListWidget):
 
     def setCurrentDoc(self, document):
         self.currentDoc = document
-
+        for row in range(self.count()):
+            item = self.item(row)
+            if item.text() == document.name:
+                item.setSelected(True)
+            else:
+                item.setSelected(False)
     def createContextMenu(self, docName):
         self.popMenu = QMenu(self)
         editAction = QtGui.QAction('edit name', self)
@@ -42,33 +47,18 @@ class DocumentListView(QListWidget):
         deleteAction.triggered.connect(partial(self.showDeleteDialog, docName))
 
     def on_context_menu(self, point):
-        docName = self.itemAt(point).text()
+        item = self.itemAt(point)
+        if item == None:
+            return
+        docName = item.text()
         self.createContextMenu(docName)
         self.popMenu.exec(self.mapToGlobal(point))
 
     def showEditWindow(self, docName):
-        self.createEditNameWindow(docName)
-        self.editPopUp.show()
-
-    def createEditNameWindow(self, docName):
-        nameField = QLineEdit()
-        nameField.setText(docName)
-        saveButton = QPushButton('save')
-        saveButton.clicked.connect(partial(self.saveName, docName, nameField))
-        layout = QVBoxLayout()
-        layout.addWidget(nameField)
-        layout.addWidget(saveButton)
-
-        self.editPopUp = QWidget()
-        self.editPopUp.setLayout(layout)
-
-    def saveName(self, docName, nameField):
-        text = nameField.text()
-        if text == '':
-            return
         doc = self.getDocByName(docName)
-        self.saveDocNameHandler(doc, text)
-        self.editPopUp.close()
+        self.editNameWindow = EditNameWindow(self.documents, doc, self.saveDocNameHandler)
+        self.editNameWindow.show()
+
 
     def showDeleteDialog(self, docName):
         dlg = DeleteDocumentDialog(docName)
@@ -102,3 +92,37 @@ class DeleteDocumentDialog(QDialog):
         self.layout.addWidget(message)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
+
+class EditNameWindow(QWidget):
+    def __init__(self, projectDocs, doc, saveNameHandler):
+        super().__init__()
+        self.projectDocs = projectDocs
+        self.saveNameHandler = saveNameHandler
+        self.errorMessageShowing = False
+        self.nameField = QLineEdit()
+        self.nameField.setText(doc.name)
+        saveButton = QPushButton('save')
+        saveButton.clicked.connect(partial(self.saveNameClicked, doc, self.nameField, self.saveNameHandler))
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.nameField)
+        self.layout.addWidget(saveButton)
+
+        self.setLayout(self.layout)
+
+    def saveNameClicked(self, doc, nameField, saveNameHandler):
+        newName = nameField.text()
+        if newName == '':
+            return
+        if self.docNameExists(newName):
+            if not self.errorMessageShowing:
+                self.layout.insertWidget(1, QLabel('Document name already exists'))
+                self.errorMessageShowing = True
+        else:
+            saveNameHandler(doc, newName)
+            self.close()
+
+    def docNameExists(self, docName):
+        for doc in self.projectDocs:
+            if doc.name == docName:
+                return True
+        return False
