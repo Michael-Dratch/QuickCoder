@@ -2,9 +2,11 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QAction
 
 class MenuBar(QMenuBar):
-    def __init__(self, parent):
+    def __init__(self, parent, controller):
         super(MenuBar, self).__init__(parent)
+        self.controller = controller
         self.addMenus()
+
 
     def addMenus(self):
         self.addMenu(self.createFileMenu())
@@ -14,15 +16,27 @@ class MenuBar(QMenuBar):
     def createFileMenu(self):
         fileMenu = QMenu("File", self)
         #newAction = self.createAction("New", self.parent().newFile)
-        # openAction = self.createAction("Open", self.parent().ioManager.openFile)
-        # saveAction = self.createAction("Save", self.parent().ioManager.saveFile)
-        # saveAsAction = self.createAction("Save As", self.parent().ioManager.saveAs)
-        #closeAction = self.createAction("Close", self.parent().closeApp)
-        #fileMenu.addActions([newAction, closeAction])
+
+        newDocumentAction = self.createAction("New Document", self.controller.createNewDocument)
+        newProjectAction = self.createAction("New Project", self.controller.createNewProject)
+        loadAction = self.createAction("Open Project", self.controller.showLoadProjectWindow)
+        saveAction = self.createAction("Save", self.controller.saveDocument)
+        exitAction = self.createAction("Exit", self.controller.exit)
+        fileMenu.addActions([newDocumentAction, newProjectAction, loadAction])
+        fileMenu.addSeparator()
+        fileMenu.addAction(saveAction)
+        fileMenu.addSeparator()
+        fileMenu.addAction(exitAction)
+
         return fileMenu
 
     def createEditMenu(self):
         editMenu = QMenu("Edit", self)
+        undoAction = self.createAction('Undo typing', self.controller.undoTyping)
+        redoAction = self.createAction('Redo typing', self.controller.redoTyping)
+        cutAction = self.createAction('Cut', self.controller.cutSelectedText)
+        pasteAction = self.createAction('Paste', self.controller.paste)
+        editMenu.addActions([undoAction, redoAction, cutAction, pasteAction])
         return editMenu
 
     def createHelpMenu(self):

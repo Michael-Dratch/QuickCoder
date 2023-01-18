@@ -1,47 +1,69 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QTabWidget, QDockWidget, QVBoxLayout
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSplitter, QSizePolicy
 
+from src.gui.codeinstancesview import CodeInstanceView
 from src.gui.codelistview import CodeListView
 from src.gui.documentlistview import DocumentListView
-from src.gui.mainwindow import MainWindow
+from src.gui.documentviewcontainer import DocumentViewContainer
+from src.gui.gui import GUI
 from src.gui.menubar import MenuBar
 from src.gui.editor import Editor
-# from src.gui.codeview import CodeView
+
 
 
 class MainWindowBuilder:
     def __init__(self, controller):
         self.controller = controller
+
     def build(self):
-        window = MainWindow()
-        window.x = 200
-        window.y = 200
-        window.w = 900
-        window.h = 600
-        window.setGeometry(window.x, window.y, window.w, window.h)
-        window.setWindowTitle("QuickCode")
-        self.initializeComponents(window)
-        return window
+        gui = GUI()
+        gui.x = 200
+        gui.y = 200
+        gui.w = 1300
+        gui.h = 800
+        gui.setGeometry(gui.x, gui.y, gui.w, gui.h)
+        gui.setWindowTitle("QuickCode")
+        self.initializeComponents(gui)
+        return gui
 
-    def initializeComponents(self, window):
-        menuBar = MenuBar(window)
-        window.documentListView = DocumentListView(self.controller.changeSelectedDoc,
-                                            self.controller.changeDocName,
-                                            self.controller.deleteDoc)
-        window.codeListView = CodeListView(self.controller.changeSelectedCode,
-                                           self.controller.updateCode,
-                                           self.controller.deleteCode)
+    def initializeComponents(self, gui):
+        menuBar = MenuBar(gui, self.controller)
+        gui.documentListView = DocumentListView(self.controller.changeSelectedDoc,
+                                                self.controller.changeDocName,
+                                                self.controller.deleteDoc)
+        gui.codeListView = CodeListView(self.controller.changeSelectedCode,
+                                        self.controller.updateCode,
+                                        self.controller.deleteCode)
 
-        window.editor = Editor(window, self.controller.createCodeInstance, self.controller.saveCodeInstances)
+        gui.editor = Editor(gui, self.controller.createCodeInstance, self.controller.saveCodeInstances)
 
-        projectLayout = QVBoxLayout()
-        projectLayout.addWidget(window.documentListView)
-        projectLayout.addWidget(window.codeListView)
-        # window.codeView = CodeView()
-        innerLayout = QHBoxLayout()
-        innerLayout.addLayout(projectLayout)
-        innerLayout.addWidget(window.editor)
-        # innerLayout.addWidget(window.codeView)
+        gui.codeInstanceView = CodeInstanceView()
+
+        gui.documentViewContainer = DocumentViewContainer(gui.documentListView)
+
+        codeWindow = QWidget()
+        codeWindow.setMaximumWidth(400)
+        codeLayout = QVBoxLayout()
+        codeLayout.addWidget(QLabel('Project codes:'))
+        codeLayout.addWidget(gui.codeListView)
+        codeLayout.addWidget(QLabel('Selected code references:'))
+        codeLayout.addWidget(QLabel('Sentiment       Text'))
+        codeLayout.addWidget(gui.codeInstanceView)
+        codeWindow.setLayout(codeLayout)
+
+
+
+        innerLayout = QSplitter()
+        innerLayout.addWidget(gui.documentViewContainer)
+        innerLayout.addWidget(gui.editor)
+        innerLayout.addWidget(codeWindow)
+        innerLayout.setChildrenCollapsible(False)
+        innerLayout.setSizes([200, 800, 300])
+        innerLayout.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+
         outerLayout = QVBoxLayout()
+        outerLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         outerLayout.addWidget(menuBar)
-        outerLayout.addLayout(innerLayout)
-        window.setLayout(outerLayout)
+        outerLayout.addWidget(innerLayout)
+        gui.setLayout(outerLayout)

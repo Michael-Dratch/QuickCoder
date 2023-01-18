@@ -15,6 +15,7 @@ class CodeInstanceView(QListWidget):
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.on_context_menu)
 
+
     def setCodeInstances(self, codeInstances):
         self.codeInstances = codeInstances
         for i in self.codeInstances:

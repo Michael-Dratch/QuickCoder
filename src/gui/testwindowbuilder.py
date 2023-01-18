@@ -3,14 +3,14 @@ from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton
 from src.datastructures import Code, CodeInstance
 from src.gui.codeinstancesview import CodeInstanceView
 from src.gui.editor import Editor
-from src.gui.mainwindow import MainWindow
+from src.gui.gui import GUI
 from src.gui.codelistview import CodeListView
 
 
 class TestWindowBuilder:
 
     def build(self):
-        window = MainWindow()
+        window = GUI()
         window.x = 200
         window.y = 200
         window.w = 900

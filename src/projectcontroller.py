@@ -12,6 +12,12 @@ class ProjectController:
     def setDatabase(self, database):
         self.database = database
 
+    def hideDocumentView(self):
+        print('hiding documentView')
+
+    def showDocumentView(self):
+        print('showing document view')
+
     def changeDocName(self, doc, newName):
         print("changing doc name")
 
@@ -34,3 +40,34 @@ class ProjectController:
 
     def createCodeInstance(self, start, end, text):
         print('creating code instance')
+
+    def createNewDocument(self):
+        print('creating new document')
+    def createNewProject(self, name):
+
+        print('creating new project: ' + name)
+
+    def loadProject(self, project):
+        print('loading ' + project.name)
+
+    def showLoadProjectWindow(self):
+        print('showing load project window')
+    def saveDocument(self):
+        print('saving document')
+
+    def exit(self):
+        print('exiting')
+
+
+    def undoTyping(self):
+        print('undo')
+
+    def redoTyping(self):
+        print('redo')
+
+    def cutSelectedText(self):
+        print('cut')
+
+    def paste(self):
+        print('paste')
+

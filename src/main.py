@@ -1,11 +1,11 @@
 import sys
 from PyQt6.QtWidgets import QApplication
 
-from src.datastructures import Document, Code
+from src.datastructures import Document, Code, CodeInstance, Sentiment, Project
 from src.gui.mainwindowbuilder import MainWindowBuilder
 from projectcontroller import ProjectController
 from database.database import Database
-
+from src.gui.projectview import ProjectView
 
 
 # testing functions
@@ -19,21 +19,48 @@ def getNewCodeList():
     code2 = Code(2, 'code2', '#0000FF')
     return [code1, code2]
 
+def getNewCodeInstances(code):
+    codeInstance1 = CodeInstance(1, 'sdfkjsdkfjh', 5, 10, Sentiment.POSITIVE, code)
+    codeInstance2 = CodeInstance(2, 'sdfkjsdsdflsdj  sldkfjsd kfjh', 20, 30, Sentiment.NEUTRAL, code)
+    return [codeInstance1, codeInstance2]
 
+def getNewProject():
+    return Project(1, 'project1')
+
+def getProjectList():
+    project1 = Project(1, 'project1')
+    project2 = Project(2, 'project2')
+    project3= Project(3, 'project3')
+    project4 = Project(4, 'project4')
+    project5 = Project(5, 'project5')
+    project6 = Project(6, 'project6')
+    project7 = Project(7, 'project7')
+    project8 = Project(8, 'project8')
+    project9 = Project(9, 'project9')
+    return [project1, project2, project3, project4, project5, project6, project7, project8, project9]
 
 if __name__=="__main__":
 
     app = QApplication(sys.argv)
     projectController = ProjectController()
-    builder = MainWindowBuilder(projectController)
 
+    projects = getProjectList()
+    projectView = ProjectView(projects, projectController.createNewProject, projectController.loadProject)
+
+
+    builder = MainWindowBuilder(projectController)
     GUI = builder.build()
     database = Database()
-
+    database.createConnection(':memory:')
     projectController.setGUI(GUI)
     projectController.setDatabase(database)
 
-    GUI.setDocuments(getNewDocList())
-    GUI.setCodes(getNewCodeList())
-    GUI.show()
+    # GUI.setDocuments(getNewDocList())
+    # codes = getNewCodeList()
+    # GUI.setCodes(codes)
+    # GUI.setCodeInstances(getNewCodeInstances(codes[0]))
+    # GUI.setProject(getNewProject())
+
+    #GUI.show()
+    projectView.show()
     sys.exit(app.exec())
