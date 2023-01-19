@@ -26,8 +26,8 @@ class ProjectController:
         projectID = self.database.createProject(name)
         self.currentProject = Project(projectID, name)
         self.GUI.setProject(self.currentProject)
-        documentID = self.database.createDocument('New Document', projectID)
-        self.currentDoc = Document(documentID, 'New Document', '')
+        document = self.database.createDocument('New Document', projectID)
+        self.currentDoc = document
         self.projectCodes = []
         self.GUI.setCodes(self.projectCodes)
         self.projectDocs = [self.currentDoc]
@@ -43,10 +43,6 @@ class ProjectController:
 
 
     def deleteDoc(self, doc):
-        print('in controller')
-        print(doc)
-        print(doc.id)
-        print('end in controller')
         self.database.deleteDocument(doc.id)
         self.GUI.removeDoc(doc)
 

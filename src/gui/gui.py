@@ -36,6 +36,7 @@ class GUI(QWidget):
     def addDocument(self, document):
         self.documentListView.documents.append(document)
         self.documentListView.addItem(document.name)
+        self.editor.setDisabled(False)
         self.setCurrentDoc(document)
 
     def setCurrentDoc(self, doc):
@@ -44,3 +45,9 @@ class GUI(QWidget):
 
     def removeDoc(self, doc):
         self.documentListView.removeDoc(doc)
+        if len(self.documentListView.documents) == 0:
+            self.editor.setText('Create new document to start coding.')
+            self.editor.setDisabled(True)
+
+
+

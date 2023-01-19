@@ -198,7 +198,6 @@ class Database:
         self.conn.commit()
 
     def deleteDocument(self, documentID):
-        print(documentID)
         sql = """DELETE FROM document WHERE id=:documentID"""
         self.cursor.execute(sql, {'documentID': documentID})
         self.conn.commit()

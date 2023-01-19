@@ -23,8 +23,9 @@ class DocumentListView(QListWidget):
         self.customContextMenuRequested.connect(self.on_context_menu)
 
     def itemClicked(self, item):
-        doc = self.getDocByName(item.text())
-        self.docSelectedHandler(doc)
+        if item:
+            doc = self.getDocByName(item.text())
+            self.docSelectedHandler(doc)
 
     def setDocuments(self, documents):
         self.documents = documents
@@ -42,11 +43,12 @@ class DocumentListView(QListWidget):
 
     def removeDoc(self, doc):
         item = self.getItem(doc)
-        self.removeItemWidget(item)
+        row = self.row(item)
+        self.takeItem(row)
         self.documents.remove(doc)
         if self.currentDoc == doc:
-            self.setCurrentDoc(self.documents[0])
-
+            if len(self.documents) != 0:
+                self.setCurrentDoc(self.documents[0])
 
     def getDocByName(self, docName):
         for doc in self.documents:
@@ -58,6 +60,7 @@ class DocumentListView(QListWidget):
             item = self.item(row)
             if item.text() == doc.name:
                 return item
+
     def changeDocLabelHandler(self, doc, newName):
         item = self.getItem(doc)
         item.setText(newName)
@@ -82,7 +85,8 @@ class DocumentListView(QListWidget):
 
     def showEditWindow(self, docName):
         doc = self.getDocByName(docName)
-        self.editNameWindow = EditCodeNameWindow(doc, self.documents, self.saveDocNameHandler, self.changeDocLabelHandler)
+        self.editNameWindow = EditCodeNameWindow(doc, self.documents, self.saveDocNameHandler,
+                                                 self.changeDocLabelHandler)
         self.editNameWindow.show()
 
     def showDeleteDialog(self, docName):
@@ -92,8 +96,3 @@ class DocumentListView(QListWidget):
             self.deleteDocHandler(doc)
         else:
             pass
-
-
-
-
-
