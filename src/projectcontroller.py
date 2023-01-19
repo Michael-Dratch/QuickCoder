@@ -47,10 +47,14 @@ class ProjectController:
         self.GUI.removeDoc(doc)
 
     def changeSelectedCode(self, code):
-        print('selected code ' + code.name)
+        self.currentCode = code
 
     def updateCode(self, code, newName, color):
-        print('updated code name: ' + newName + ' color: ' + color)
+        self.database.updateCode(code.id, newName, color)
+        updatedCode = self.database.getCode(code.id)
+        self.GUI.replaceUpdatedCode(code, updatedCode)
+        self.projectCodes.remove(code)
+        self.projectCodes.append(updatedCode)
 
     def deleteCode(self, code):
         print('deleting code: ' + code.name)
@@ -92,8 +96,9 @@ class ProjectController:
         self.GUI.showCreateCodeWindow(self.projectCodes, self.createNewCode)
 
     def createNewCode(self, name, color):
-        print(name)
-        print(color)
+        code = self.database.createCode(name, color, self.currentProject.id)
+        self.currentCode = code
+        self.GUI.addNewCode(code)
 
     def createDocumentButtonHandler(self):
         self.GUI.showCreateDocumentWindow(self.projectDocs, self.createNewDocument)

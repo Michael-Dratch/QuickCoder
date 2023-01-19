@@ -30,10 +30,14 @@ class CodeListView(QListWidget):
     def setCodes(self, codes):
         self.codes = codes
         for code in self.codes:
-            item = QListWidgetItem(code.name, self)
-            icon = self.createColorIcon(code.color)
-            item.setIcon(icon)
-            self.addItem(item)
+            self.addCodeToListView(code)
+
+    def addCodeToListView(self, code):
+        item = QListWidgetItem(code.name, self)
+        icon = self.createColorIcon(code.color)
+        item.setIcon(icon)
+        self.addItem(item)
+        return item
 
     def createColorIcon(self, color):
         pixMap = QPixmap(20, 20)
@@ -79,6 +83,21 @@ class CodeListView(QListWidget):
             if code.name == codeName:
                 return code
 
+    def addNewCode(self, code):
+        self.codes.append(code)
+        item = self.addCodeToListView(code)
+        item.setSelected(True)
+
+    def replaceUpdatedCode(self, oldCode, newCode):
+        item = self.getItem(oldCode)
+        item.setText(newCode.name)
+        item.setIcon(self.createColorIcon(newCode.color))
+
+    def getItem(self, code):
+        for row in range(self.count()):
+            item = self.item(row)
+            if item.text() == code.name:
+                return item
 
 class DeleteCodeDialog(QDialog):
     def __init__(self, codeName):

@@ -72,12 +72,21 @@ class Database:
         sql = """INSERT INTO code (id, name, color, project) VALUES (NULL, :name, :color, :project)"""
         self.cursor.execute(sql, {'project': projectID, 'name': name, 'color': color})
         self.conn.commit()
+        codeID = self.cursor.lastrowid
+        code = Code(codeID, name, color)
+        return code
 
     def getProjectIDFromName(self, projectName):
         self.cursor.execute("""SELECT * FROM project WHERE name=:projectName""", {'projectName': projectName})
         projectID = self.cursor.fetchone()
         return projectID
 
+    def getCode(self, codeID):
+        self.cursor.execute("""SELECT * FROM code WHERE id=:codeID""",
+                            {'codeID': codeID})
+        codeData = self.cursor.fetchone()
+        code = Code(codeData[0], codeData[1], codeData[2])
+        return code
     def codeExistsByID(self, codeID):
         self.cursor.execute("""SELECT * FROM code WHERE id=:codeID""",
                             {'codeID': codeID})

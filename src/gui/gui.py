@@ -49,5 +49,8 @@ class GUI(QWidget):
             self.editor.setText('Create new document to start coding.')
             self.editor.setDisabled(True)
 
+    def addNewCode(self, code):
+        self.codeListView.addNewCode(code)
 
-
+    def replaceUpdatedCode(self, oldCode, updatedCode):
+        self.codeListView.replaceUpdatedCode(oldCode, updatedCode)
