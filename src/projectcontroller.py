@@ -1,5 +1,4 @@
-from src.datastructures import Project, Document, Code
-from src.gui.createcodewindow import CreateCodeWindow
+from src.datastructures import Project, Document
 
 
 class ProjectController:
@@ -11,6 +10,7 @@ class ProjectController:
         self.currentDoc = None
         self.currentCode = None
         self.projectCodes = None
+        self.projectDocs = None
 
     def start(self):
         self.projectView.show()
@@ -22,21 +22,33 @@ class ProjectController:
 
     def setProjectView(self, projectView):
         self.projectView = projectView
-    def hideDocumentView(self):
-        print('hiding documentView')
+    def createNewProject(self, name):
+        projectID = self.database.createProject(name)
+        self.currentProject = Project(projectID, name)
+        self.GUI.setProject(self.currentProject)
+        documentID = self.database.createDocument('New Document', projectID)
+        self.currentDoc = Document(documentID, 'New Document', '')
+        self.projectCodes = []
+        self.GUI.setCodes(self.projectCodes)
+        self.projectDocs = [self.currentDoc]
+        self.GUI.setDocuments(self.projectDocs)
+        self.GUI.setCurrentDoc(self.currentDoc)
+        self.GUI.show()
+        self.projectView.close()
 
-    def showDocumentView(self):
-        print('showing document view')
 
     def changeDocName(self, doc, newName):
         self.database.updateDocument(doc.id, newName, self.currentProject.id)
 
-        print("changing doc name")
 
-    def changeSelectedDoc(self, doc):
-        print('current doc ' + doc.name)
+
     def deleteDoc(self, doc):
-        print('deleting ' + doc.name)
+        print('in controller')
+        print(doc)
+        print(doc.id)
+        print('end in controller')
+        self.database.deleteDocument(doc.id)
+        self.GUI.removeDoc(doc)
 
     def changeSelectedCode(self, code):
         print('selected code ' + code.name)
@@ -52,21 +64,8 @@ class ProjectController:
 
     def createCodeInstance(self, start, end, text):
         print('creating code instance')
-
     def createNewDocument(self):
         print('creating new document')
-    def createNewProject(self, name):
-        projectID = self.database.createProject(name)
-        self.currentProject = Project(projectID, name)
-        self.GUI.setProject(self.currentProject)
-        documentID = self.database.createDocument('New Document', projectID)
-        self.currentDoc = Document(documentID, 'New Document', '')
-        self.projectCodes = []
-        self.GUI.setCodes(self.projectCodes)
-        self.GUI.setDocuments([self.currentDoc])
-        self.GUI.setCurrentDoc(self.currentDoc)
-        self.GUI.show()
-        self.projectView.close()
 
     def loadProject(self, project):
         print('loading ' + project.name)
@@ -99,3 +98,14 @@ class ProjectController:
     def createNewCode(self, name, color):
         print(name)
         print(color)
+
+    def createDocumentButtonHandler(self):
+        self.GUI.showCreateDocumentWindow(self.projectDocs, self.createNewDocument)
+
+    def createNewDocument(self, name):
+        document = self.database.createDocument(name, self.currentProject.id)
+        self.GUI.addDocument(document)
+
+    def changeSelectedDoc(self, doc):
+        self.GUI.setCurrentDoc(doc)
+

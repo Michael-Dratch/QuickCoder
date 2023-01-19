@@ -166,12 +166,21 @@ class Database:
         sql = """INSERT INTO document (id, name, project) VALUES (NULL, :name, :project)"""
         self.cursor.execute(sql, {'name': name, 'project': projectID})
         self.conn.commit()
+        docID = self.cursor.lastrowid
+        return Document(docID, name, '')
 
     def documentExistsByID(self, documentID):
         self.cursor.execute("""SELECT * FROM document WHERE id=:documentID""",
                             {'documentID': documentID})
         documents = self.cursor.fetchall()
         return len(documents) > 0
+
+    def getDocumentByID(self, documentID):
+        self.cursor.execute("""SELECT * FROM document WHERE id=:documentID""",
+                            {'documentID': documentID})
+        documentData = self.cursor.fetchone()
+        document = Document(documentData[0], documentData[1], documentData[2])
+        return document
 
     def documentExistsByName(self, name, projectID):
         self.cursor.execute("""SELECT * FROM document WHERE name=:name AND project=:projectID""",
@@ -189,6 +198,7 @@ class Database:
         self.conn.commit()
 
     def deleteDocument(self, documentID):
+        print(documentID)
         sql = """DELETE FROM document WHERE id=:documentID"""
         self.cursor.execute(sql, {'documentID': documentID})
         self.conn.commit()

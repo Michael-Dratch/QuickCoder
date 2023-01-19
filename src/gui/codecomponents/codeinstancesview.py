@@ -2,11 +2,11 @@ from functools import partial
 
 from PyQt6 import QtGui, QtCore
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QListWidget, QListWidgetItem, QMenu, QWidget, QPushButton, QHBoxLayout, QLabel, QDialog, \
+from PyQt6.QtWidgets import QListWidget, QListWidgetItem, QMenu, QWidget, QPushButton, QLabel, QDialog, \
     QDialogButtonBox, QVBoxLayout
 
 from src.datastructures import Sentiment
-from src.gui.codeinstancelistitem import CodeInstanceListItem
+from src.gui.codecomponents.codeinstancelistitem import CodeInstanceListItem
 
 
 class CodeInstanceView(QListWidget):
@@ -84,15 +84,15 @@ class ChangeSentimentWindow(QWidget):
         self.codeInstance = codeInstance
         layout = QVBoxLayout()
         positiveBtn = QPushButton('Positive')
-        positiveBtn.setIcon(QIcon('resources/positive-icon.png'))
+        positiveBtn.setIcon(QIcon('../resources/positive-icon.png'))
         positiveBtn.clicked.connect(partial(self.sentimentSelected, Sentiment.POSITIVE, itemWidget))
 
         negativeBtn = QPushButton('Negative')
-        negativeBtn.setIcon(QIcon('resources/negative-icon.png'))
+        negativeBtn.setIcon(QIcon('../resources/negative-icon.png'))
         negativeBtn.clicked.connect(partial(self.sentimentSelected, Sentiment.NEGATIVE, itemWidget))
 
         neutralBtn = QPushButton('Neutral')
-        neutralBtn.setIcon(QIcon('resources/neutral-icon.png'))
+        neutralBtn.setIcon(QIcon('../resources/neutral-icon.png'))
         neutralBtn.clicked.connect(partial(self.sentimentSelected, Sentiment.NEUTRAL, itemWidget))
 
         noneBtn = QPushButton('None')

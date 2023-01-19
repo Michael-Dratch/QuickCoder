@@ -3,10 +3,10 @@ from functools import partial
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QPixmap, QIcon
-from PyQt6.QtWidgets import QDockWidget, QLabel, QVBoxLayout, QWidget, QListWidget, QMenu, QDialog, QDialogButtonBox, \
-    QLineEdit, QListWidgetItem, QPushButton, QHBoxLayout, QColorDialog
+from PyQt6.QtWidgets import QLabel, QVBoxLayout, QListWidget, QMenu, QDialog, QDialogButtonBox, \
+    QListWidgetItem, QPushButton
 
-from src.gui.editcodewindow import EditCodeWindow
+from src.gui.codecomponents.editcodewindow import EditCodeWindow
 
 
 class CodeListView(QListWidget):

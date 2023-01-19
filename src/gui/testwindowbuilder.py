@@ -1,10 +1,7 @@
-from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QVBoxLayout
 
-from src.datastructures import Code, CodeInstance
-from src.gui.codeinstancesview import CodeInstanceView
-from src.gui.editor import Editor
+from src.gui.codecomponents.codeinstancesview import CodeInstanceView
 from src.gui.gui import GUI
-from src.gui.codelistview import CodeListView
 
 
 class TestWindowBuilder:

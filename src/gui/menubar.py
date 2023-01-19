@@ -17,7 +17,7 @@ class MenuBar(QMenuBar):
         fileMenu = QMenu("File", self)
         #newAction = self.createAction("New", self.parent().newFile)
 
-        newDocumentAction = self.createAction("New Document", self.controller.createNewDocument)
+        newDocumentAction = self.createAction("New Document", self.controller.createDocumentButtonHandler)
         newProjectAction = self.createAction("New Project", self.controller.createNewProject)
         loadAction = self.createAction("Open Project", self.controller.showLoadProjectWindow)
         saveAction = self.createAction("Save", self.controller.saveDocument)
