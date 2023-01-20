@@ -11,6 +11,7 @@ class Editor(QTextEdit):
         self.createCodeInstanceHandler = createCodeInstanceHandler
         self.saveCodeInstancesHandler = saveCodeInstancesHandler
         self.codeInstances = []
+        self.currentCode = None
         self.setStyleSheet("padding: 20px;"
                            "background-color: white;")
 
@@ -26,6 +27,8 @@ class Editor(QTextEdit):
         self.setHtml(doc.html)
         self.documentSet = True
 
+    def setCurrentCode(self, code):
+        self.currentCode = code
     def setCodeInstances(self, codeInstances):
         self.codeInstances = codeInstances
 
@@ -62,6 +65,7 @@ class Editor(QTextEdit):
         if range.start == range.end:
             return
         text = self.getSelectedText()
+        self.highlightSelection(self.currentCode.color)
         self.createCodeInstanceHandler(range.start, range.end, text)
 
     def getSelectedRange(self):

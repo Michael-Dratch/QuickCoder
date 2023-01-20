@@ -59,12 +59,6 @@ if __name__ == "__main__":
     projectController.setDatabase(database)
     projectController.setProjectView(projectView)
 
-    # GUI.setDocuments(getNewDocList())
-    # codes = getNewCodeList()
-    # GUI.setCodes(codes)
-    # GUI.setCodeInstances(getNewCodeInstances(codes[0]))
-    # GUI.setProject(getNewProject())
-
-    # GUI.show()
-    projectController.start()
+    projectController.createNewTestProject('project')
+    #projectController.start()
     sys.exit(app.exec())

@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QMenu, QListWidget
 from PyQt6 import QtCore, QtGui
 
 from src.gui.documentcomponents.deletedocumentdialog import DeleteDocumentDialog
-from src.gui.documentcomponents.editdocnamewindow import EditCodeNameWindow
+from src.gui.documentcomponents.editdocnamewindow import EditDocNameWindow
 
 
 class DocumentListView(QListWidget):
@@ -85,8 +85,8 @@ class DocumentListView(QListWidget):
 
     def showEditWindow(self, docName):
         doc = self.getDocByName(docName)
-        self.editNameWindow = EditCodeNameWindow(doc, self.documents, self.saveDocNameHandler,
-                                                 self.changeDocLabelHandler)
+        self.editNameWindow = EditDocNameWindow(doc, self.documents, self.saveDocNameHandler,
+                                                self.changeDocLabelHandler)
         self.editNameWindow.show()
 
     def showDeleteDialog(self, docName):

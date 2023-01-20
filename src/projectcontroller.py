@@ -1,4 +1,4 @@
-from src.datastructures import Project, Document
+from src.datastructures import Project, Document, CodeInstance, Sentiment
 
 
 class ProjectController:
@@ -14,6 +14,7 @@ class ProjectController:
 
     def start(self):
         self.projectView.show()
+
     def setGUI(self, gui):
         self.GUI = gui
 
@@ -22,25 +23,44 @@ class ProjectController:
 
     def setProjectView(self, projectView):
         self.projectView = projectView
-    def createNewProject(self, name):
-        projectID = self.database.createProject(name)
-        self.currentProject = Project(projectID, name)
+
+    def createNewTestProject(self, name):
+        project = self.database.createProject(name)
+        self.currentProject = project
         self.GUI.setProject(self.currentProject)
-        document = self.database.createDocument('New Document', projectID)
+        document = self.database.createDocument('New Document', self.currentProject.id)
+        self.currentDoc = document
+        code1 = self.database.createCode('code1', '#00FF00', self.currentProject.id)
+        self.currentCode = code1
+        self.projectCodes = [code1]
+        self.GUI.setCodes(self.projectCodes)
+        self.GUI.setSelectedCode(code1)
+        self.projectDocs = [self.currentDoc]
+        self.GUI.setDocuments(self.projectDocs)
+        self.GUI.setCurrentDoc(self.currentDoc)
+        self.GUI.editor.setText('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+
+        self.GUI.setCodeInstances([])
+        self.GUI.show()
+        self.projectView.close()
+
+    def createNewProject(self, name):
+        project = self.database.createProject(name)
+        self.currentProject = project
+        self.GUI.setProject(self.currentProject)
+        document = self.database.createDocument('New Document', self.currentProject.id)
         self.currentDoc = document
         self.projectCodes = []
         self.GUI.setCodes(self.projectCodes)
         self.projectDocs = [self.currentDoc]
         self.GUI.setDocuments(self.projectDocs)
         self.GUI.setCurrentDoc(self.currentDoc)
+        self.GUI.setCodeInstances([])
         self.GUI.show()
         self.projectView.close()
 
-
     def changeDocName(self, doc, newName):
         self.database.updateDocument(doc.id, newName, self.currentProject.id)
-
-
 
     def deleteDoc(self, doc):
         self.database.deleteDocument(doc.id)
@@ -48,6 +68,7 @@ class ProjectController:
 
     def changeSelectedCode(self, code):
         self.currentCode = code
+        self.GUI.setSelectedCode(code)
 
     def updateCode(self, code, newName, color):
         self.database.updateCode(code.id, newName, color)
@@ -57,13 +78,23 @@ class ProjectController:
         self.projectCodes.append(updatedCode)
 
     def deleteCode(self, code):
-        print('deleting code: ' + code.name)
+        self.database.deleteCode(code.id)
+        self.database.deleteAllInstancesOfCode(code.id)
+        self.GUI.removeCode(code)
+        self.projectCodes.remove(code)
 
     def saveCodeInstances(self, codeInstances):
         print('saving codes')
 
     def createCodeInstance(self, start, end, text):
-        print('creating code instance')
+        codeInstance = self.database.createCodeInstance(self.currentDoc,
+                                                        self.currentCode,
+                                                        text,
+                                                        start,
+                                                        end,
+                                                        None)
+        self.GUI.addCodeInstance(codeInstance)
+
     def createNewDocument(self):
         print('creating new document')
 
@@ -72,12 +103,12 @@ class ProjectController:
 
     def showLoadProjectWindow(self):
         print('showing load project window')
+
     def saveDocument(self):
         print('saving document')
 
     def exit(self):
         print('exiting')
-
 
     def undoTyping(self):
         print('undo')
@@ -91,7 +122,6 @@ class ProjectController:
     def paste(self):
         print('paste')
 
-
     def createCodeButtonHandler(self):
         self.GUI.showCreateCodeWindow(self.projectCodes, self.createNewCode)
 
@@ -99,6 +129,7 @@ class ProjectController:
         code = self.database.createCode(name, color, self.currentProject.id)
         self.currentCode = code
         self.GUI.addNewCode(code)
+        self.GUI.setSelectedCode(code)
 
     def createDocumentButtonHandler(self):
         self.GUI.showCreateDocumentWindow(self.projectDocs, self.createNewDocument)
@@ -109,4 +140,3 @@ class ProjectController:
 
     def changeSelectedDoc(self, doc):
         self.GUI.setCurrentDoc(doc)
-

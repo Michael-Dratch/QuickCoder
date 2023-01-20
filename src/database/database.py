@@ -132,7 +132,8 @@ class Database:
         sql = """INSERT INTO project (id, name) VALUES (NULL, :name)"""
         self.cursor.execute(sql, {'name': name})
         self.conn.commit()
-        return self.cursor.lastrowid
+        projectID = self.cursor.lastrowid
+        return Project(projectID, name)
 
     def projectExists(self, projectID):
         self.cursor.execute("""SELECT * FROM project WHERE id=:projectID""", {'projectID': projectID})
@@ -221,17 +222,18 @@ class Database:
             docs.append(document)
         return docs
 
-    def createCodeInstance(self, documentID, codeID, text, start, end, sentiment):
+    def createCodeInstance(self, document, code, text, start, end, sentiment):
         sql = """INSERT INTO codeinstance (id, document, code, text, start, end, sentiment) 
                     VALUES (NULL, :documentID, :codeID, :text, :start, :end, :sentiment)"""
-        self.cursor.execute(sql, {'documentID': documentID,
-                                  'codeID': codeID,
+        self.cursor.execute(sql, {'documentID': document.id,
+                                  'codeID': code.id,
                                   'text': text,
                                   'start': start,
                                   'end': end,
                                   'sentiment': sentiment})
         self.conn.commit()
-
+        codeInstance = CodeInstance(self.cursor.lastrowid, text, start, end, None, code)
+        return codeInstance
     def getDocumentCodeInstances(self, documentID):
         sql = """SELECT code.id, 
                         code.name, 
@@ -260,6 +262,12 @@ class Database:
         sql = """DELETE FROM codeinstance WHERE id=:id"""
         self.cursor.execute(sql, {'id': instanceId})
         self.conn.commit()
+
+    def deleteAllInstancesOfCode(self, codeID):
+        sql = """DELETE FROM codeinstance WHERE code=:codeID"""
+        self.cursor.execute(sql, {'codeID': codeID})
+        self.conn.commit()
+
 
     def getProjectCodeInstances(self, projectID):
         sql = """SELECT code.id, 

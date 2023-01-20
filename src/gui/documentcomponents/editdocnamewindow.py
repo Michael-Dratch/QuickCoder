@@ -5,14 +5,14 @@ from PyQt6.QtWidgets import QLabel
 from src.gui.documentcomponents.documentwindowbase import DocumentWindowBase
 
 
-class EditCodeNameWindow(DocumentWindowBase):
+class EditDocNameWindow(DocumentWindowBase):
     def __init__(self, doc, documents, saveNameHandler, changeDocLabelHandler):
         super().__init__()
         self.nameField.setText(doc.name)
+        self.setWindowTitle('Change Document Name')
         self.saveButton.clicked.connect(partial(self.saveNameClicked,
                                                 doc,
                                                 documents,
-                                                self.nameField,
                                                 saveNameHandler,
                                                 changeDocLabelHandler))
 

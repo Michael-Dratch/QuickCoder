@@ -99,6 +99,11 @@ class CodeListView(QListWidget):
             if item.text() == code.name:
                 return item
 
+    def removeCode(self, code):
+        item = self.getItem(code)
+        itemIndex = self.row(item)
+        self.takeItem(itemIndex)
+
 class DeleteCodeDialog(QDialog):
     def __init__(self, codeName):
         super().__init__()

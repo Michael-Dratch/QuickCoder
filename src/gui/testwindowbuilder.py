@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QVBoxLayout
 
-from src.gui.codecomponents.codeinstancesview import CodeInstanceView
+from src.gui.codecomponents.code_instances_view import CodeInstanceView
 from src.gui.gui import GUI
 
 

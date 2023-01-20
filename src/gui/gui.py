@@ -54,3 +54,13 @@ class GUI(QWidget):
 
     def replaceUpdatedCode(self, oldCode, updatedCode):
         self.codeListView.replaceUpdatedCode(oldCode, updatedCode)
+
+    def removeCode(self, code):
+        self.codeListView.removeCode(code)
+        self.codeInstanceView.removeCodeInstancesForCode(code)
+
+    def setSelectedCode(self, code):
+        self.editor.setCurrentCode(code)
+
+    def addCodeInstance(self, codeInstance):
+        self.codeInstanceView.addCodeInstance(codeInstance)

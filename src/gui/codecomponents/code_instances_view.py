@@ -15,18 +15,23 @@ class CodeInstanceView(QListWidget):
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.on_context_menu)
 
-
     def setCodeInstances(self, codeInstances):
         self.codeInstances = codeInstances
         for i in self.codeInstances:
-            item = QListWidgetItem()
-            item_widget = CodeInstanceListItem(i, self.showSentimentOptions)
-
-            item = QListWidgetItem()
-            item.setSizeHint(item_widget.sizeHint())
+            item = self.createCodeInstanceItem(i)
             self.addItem(item)
-            self.setItemWidget(item, item_widget)
 
+    def addCodeInstance(self, codeInstance):
+        self.codeInstances.append(codeInstance)
+        item = self.createCodeInstanceItem(codeInstance)
+        self.addItem(item)
+
+    def createCodeInstanceItem(self, codeInstance):
+        item_widget = CodeInstanceListItem(codeInstance, self.showSentimentOptions)
+        item = QListWidgetItem(self)
+        item.setSizeHint(item_widget.sizeHint())
+        self.setItemWidget(item, item_widget)
+        return item
 
     def on_context_menu(self, point):
         item = self.itemAt(point)
@@ -58,6 +63,13 @@ class CodeInstanceView(QListWidget):
     def showSentimentOptions(self, codeInstance, itemWidget):
         sentimentWindow = ChangeSentimentWindow(codeInstance, itemWidget)
         sentimentWindow.show()
+
+    def removeCodeInstancesForCode(self, code):
+        for row in range(self.count()):
+            item = self.item(row)
+            codeInstanceItem = self.itemWidget(item)
+            if codeInstanceItem.codeInstance.code.id == code.id:
+                self.takeItem(row)
 
 
 class DeleteCodeInstanceDialog(QDialog):
@@ -108,4 +120,3 @@ class ChangeSentimentWindow(QWidget):
         self.codeInstance.sentiment = sentiment
         itemWidget.updateSentimentButton()
         self.close()
-

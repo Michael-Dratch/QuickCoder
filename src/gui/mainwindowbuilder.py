@@ -1,9 +1,9 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSplitter, QSizePolicy, QPushButton
 
-from src.gui.codecomponents.codeinstancesview import CodeInstanceView
-from src.gui.codecomponents.codelistview import CodeListView
-from src.gui.documentcomponents.documentlistview import DocumentListView
+from src.gui.codecomponents.code_instances_view import CodeInstanceView
+from src.gui.codecomponents.code_list_view import CodeListView
+from src.gui.documentcomponents.document_list_view import DocumentListView
 from src.gui.documentcomponents.documentviewcontainer import DocumentViewContainer
 from src.gui.gui import GUI
 from src.gui.menubar import MenuBar

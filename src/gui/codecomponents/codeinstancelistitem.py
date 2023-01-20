@@ -10,10 +10,6 @@ class CodeInstanceListItem(QWidget):
         super().__init__()
         self.codeInstance = codeInstance
         self.showSentimentOptions = showSentimentOptions
-        cutoff = 30
-        text = codeInstance.text[:cutoff]
-        if len(codeInstance.text) > cutoff:
-            text += '...'
 
         self.sentimentButton = QPushButton()
         self.setButtonStyle(codeInstance, self.sentimentButton)
@@ -22,7 +18,7 @@ class CodeInstanceListItem(QWidget):
 
         item_layout = QHBoxLayout()
         item_layout.addWidget(self.sentimentButton)
-        item_layout.addWidget(QLabel(text))
+        item_layout.addWidget(QLabel(codeInstance.text))
         self.setLayout(item_layout)
 
     def setButtonStyle(self, instance, sentimentButton):

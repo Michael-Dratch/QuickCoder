@@ -74,7 +74,7 @@ class EditCodeWindow(QWidget):
         newName = self.nameField.text()
         if newName == '':
             return
-        if self.nameExists(newName):
+        if self.isDuplicateName(newName, code):
             if not self.errorMessageShowing:
                 self.layout.insertWidget(1, QLabel('Name already exists'))
                 self.errorMessageShowing = True
@@ -82,8 +82,9 @@ class EditCodeWindow(QWidget):
             self.updateCodeHandler(code, newName, self.color)
             self.close()
 
-    def nameExists(self, name):
+    def isDuplicateName(self, name, originalCode):
         for code in self.projectCodes:
             if name == code.name:
-                return True
+                if code.id != originalCode.id:
+                    return True
         return False
