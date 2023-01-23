@@ -80,7 +80,11 @@ class ProjectController:
     def deleteCode(self, code):
         self.database.deleteCode(code.id)
         self.database.deleteAllInstancesOfCode(code.id)
+        updatedInstances = self.database.getProjectCodeInstances(self.currentProject.id)
         self.GUI.removeCode(code)
+        self.GUI.setCodeInstances(updatedInstances)
+        if self.currentCode == code:
+            self.currentCode = None
         self.projectCodes.remove(code)
 
     def saveCodeInstances(self, codeInstances):

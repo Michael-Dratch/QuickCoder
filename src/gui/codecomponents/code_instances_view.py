@@ -17,6 +17,7 @@ class CodeInstanceView(QListWidget):
 
     def setCodeInstances(self, codeInstances):
         self.codeInstances = codeInstances
+        self.clear()
         for i in self.codeInstances:
             item = self.createCodeInstanceItem(i)
             self.addItem(item)
@@ -64,12 +65,7 @@ class CodeInstanceView(QListWidget):
         sentimentWindow = ChangeSentimentWindow(codeInstance, itemWidget)
         sentimentWindow.show()
 
-    def removeCodeInstancesForCode(self, code):
-        for row in range(self.count()):
-            item = self.item(row)
-            codeInstanceItem = self.itemWidget(item)
-            if codeInstanceItem.codeInstance.code.id == code.id:
-                self.takeItem(row)
+
 
 
 class DeleteCodeInstanceDialog(QDialog):

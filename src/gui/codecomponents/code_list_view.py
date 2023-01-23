@@ -24,8 +24,9 @@ class CodeListView(QListWidget):
         self.customContextMenuRequested.connect(self.on_context_menu)
 
     def itemClicked(self, item):
-        code = self.getCodeByName(item.text())
-        self.codeSelectedHandler(code)
+        if item:
+            code = self.getCodeByName(item.text())
+            self.codeSelectedHandler(code)
 
     def setCodes(self, codes):
         self.codes = codes

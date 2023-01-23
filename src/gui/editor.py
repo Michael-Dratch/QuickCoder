@@ -33,6 +33,7 @@ class Editor(QTextEdit):
         self.codeInstances = codeInstances
 
     def highlightAllCodeInstances(self):
+        self.removeAllHighlights()
         for instance in self.codeInstances:
             self.highlightRange(instance.start, instance.end, instance.code.color)
         self.setSelection(0, 0)

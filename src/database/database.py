@@ -41,14 +41,14 @@ class Database:
                                      'name text, '
                                      'html text, '
                                      'project integer, '
-                                     'FOREIGN KEY (project) REFERENCES project (id))')
+                                     'FOREIGN KEY (project) REFERENCES project (id) ON DELETE CASCADE)')
 
     def createCodeTable(self):
         self.createTable('code', '(id integer PRIMARY KEY, '
                                  'name text, '
                                  'color text, '
                                  'project integer,'
-                                 'FOREIGN KEY (project) REFERENCES project (id)) ')
+                                 'FOREIGN KEY (project) REFERENCES project (id) ON DELETE CASCADE) ')
 
     def createCodeInstanceTable(self):
         self.createTable('codeinstance', '(id integer PRIMARY KEY, '
@@ -58,8 +58,8 @@ class Database:
                                          'start integer,'
                                          'end integer,'
                                          'sentiment text,'
-                                         'FOREIGN KEY (document) REFERENCES document (id), '
-                                         'FOREIGN KEY (code) REFERENCES code (id)) ')
+                                         'FOREIGN KEY (document) REFERENCES document (id) ON DELETE CASCADE, '
+                                         'FOREIGN KEY (code) REFERENCES code (id) ON DELETE CASCADE) ')
 
     def createTable(self, name, fields):
         sql = """CREATE TABLE {} {}""".format(name, fields)

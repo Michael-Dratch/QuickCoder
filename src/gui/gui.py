@@ -21,6 +21,8 @@ class GUI(QWidget):
 
     def setCodeInstances(self, codeInstances):
         self.codeInstanceView.setCodeInstances(codeInstances)
+        self.editor.setCodeInstances(codeInstances)
+        self.editor.highlightAllCodeInstances()
 
     def setProject(self, project):
         self.documentViewContainer.setProject(project)
@@ -57,7 +59,6 @@ class GUI(QWidget):
 
     def removeCode(self, code):
         self.codeListView.removeCode(code)
-        self.codeInstanceView.removeCodeInstancesForCode(code)
 
     def setSelectedCode(self, code):
         self.editor.setCurrentCode(code)
