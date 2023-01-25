@@ -10,10 +10,19 @@ from src.gui.codecomponents.codeinstancelistitem import CodeInstanceListItem
 
 
 class CodeInstanceView(QListWidget):
-    def __init__(self):
+    def __init__(self, codeInstanceSelectedHandler):
         super().__init__()
+        self.codeInstanceSelectedHandler = codeInstanceSelectedHandler
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.on_context_menu)
+        self.currentItemChanged.connect(self.itemClicked)
+
+    def itemClicked(self):
+        item = self.currentItem()
+        if item:
+            itemWidget = self.itemWidget(item)
+            codeInstance = itemWidget.codeInstance
+            self.codeInstanceSelectedHandler(codeInstance)
 
     def setCodeInstances(self, codeInstances):
         self.codeInstances = codeInstances

@@ -250,6 +250,23 @@ class Database:
         data = self.cursor.fetchall()
         return self.buildCodeInstanceObject(data)
 
+    def getDocumentCodeInstancesByCode(self, documentID, codeID):
+        sql = """SELECT code.id, 
+                         code.name, 
+                         code.color,
+                         codeinstance.id,
+                         codeinstance.text,
+                         codeinstance.start,
+                         codeinstance.end,
+                         codeinstance.sentiment
+                 FROM codeinstance 
+                 INNER JOIN code ON codeinstance.code = code.id 
+                 WHERE document=:documentID
+                 AND code=:codeID"""
+        self.cursor.execute(sql, {'documentID': documentID, 'codeID': codeID})
+        data = self.cursor.fetchall()
+        return self.buildCodeInstanceObject(data)
+
     def buildCodeInstanceObject(self, data):
         codeInstances = []
         for row in data:

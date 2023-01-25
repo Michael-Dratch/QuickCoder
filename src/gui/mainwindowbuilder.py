@@ -37,7 +37,7 @@ class MainWindowBuilder:
 
         gui.editor = Editor(gui, self.controller.createCodeInstance, self.controller.saveCodeInstances)
 
-        gui.codeInstanceView = CodeInstanceView()
+        gui.codeInstanceView = CodeInstanceView(self.controller.selectCodeInstance)
 
         gui.documentViewContainer = DocumentViewContainer(gui.documentListView)
 

@@ -11,7 +11,7 @@ class GUI(QWidget):
         self.documentViewContainer = None
         self.codeListView = None
         self.editor = None
-        self.setCodeInstanceView = None
+        self.codeInstanceView = None
 
     def setDocuments(self, docs):
         self.documentListView.setDocuments(docs)
@@ -56,6 +56,7 @@ class GUI(QWidget):
 
     def replaceUpdatedCode(self, oldCode, updatedCode):
         self.codeListView.replaceUpdatedCode(oldCode, updatedCode)
+        self.editor.updateCodeInstanceColor(updatedCode)
 
     def removeCode(self, code):
         self.codeListView.removeCode(code)
@@ -63,5 +64,12 @@ class GUI(QWidget):
     def setSelectedCode(self, code):
         self.editor.setCurrentCode(code)
 
+    def setListedCodeInstances(self, codeInstances):
+        self.codeInstanceView.setCodeInstances(codeInstances)
+
     def addCodeInstance(self, codeInstance):
         self.codeInstanceView.addCodeInstance(codeInstance)
+
+    def selectCodeInstance(self, codeInstance):
+        self.editor.setSelection(codeInstance.start, codeInstance.end)
+        self.editor.setFocus()

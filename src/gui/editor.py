@@ -136,6 +136,12 @@ class Editor(QTextEdit):
         else:
             self.undo()
 
+    def updateCodeInstanceColor(self, updatedCode):
+        for instance in self.codeInstances:
+            if instance.code.id == updatedCode.id:
+                instance.code.color = updatedCode.color
+        self.highlightAllCodeInstances()
+
 class Range:
     def __init__(self, start, end):
         self.start = start

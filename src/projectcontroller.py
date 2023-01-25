@@ -69,7 +69,8 @@ class ProjectController:
     def changeSelectedCode(self, code):
         self.currentCode = code
         self.GUI.setSelectedCode(code)
-
+        filteredInstances = self.database.getDocumentCodeInstancesByCode(self.currentDoc.id, self.currentCode.id)
+        self.GUI.setListedCodeInstances(filteredInstances)
     def updateCode(self, code, newName, color):
         self.database.updateCode(code.id, newName, color)
         updatedCode = self.database.getCode(code.id)
@@ -134,6 +135,7 @@ class ProjectController:
         self.currentCode = code
         self.GUI.addNewCode(code)
         self.GUI.setSelectedCode(code)
+        self.GUI.setListedCodeInstances([])
 
     def createDocumentButtonHandler(self):
         self.GUI.showCreateDocumentWindow(self.projectDocs, self.createNewDocument)
@@ -144,3 +146,6 @@ class ProjectController:
 
     def changeSelectedDoc(self, doc):
         self.GUI.setCurrentDoc(doc)
+
+    def selectCodeInstance(self, codeInstance):
+        self.GUI.selectCodeInstance(codeInstance)
