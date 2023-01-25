@@ -10,9 +10,10 @@ from src.gui.codecomponents.codeinstancelistitem import CodeInstanceListItem
 
 
 class CodeInstanceView(QListWidget):
-    def __init__(self, codeInstanceSelectedHandler):
+    def __init__(self, codeInstanceSelectedHandler, deleteCodeInstanceHandler):
         super().__init__()
         self.codeInstanceSelectedHandler = codeInstanceSelectedHandler
+        self.deleteCodeInstanceHandler = deleteCodeInstanceHandler
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.on_context_menu)
         self.currentItemChanged.connect(self.itemClicked)
@@ -65,8 +66,8 @@ class CodeInstanceView(QListWidget):
     def showDeleteDialog(self, codeInstance, rowID):
         dlg = DeleteCodeInstanceDialog()
         if dlg.exec():
+            self.deleteCodeInstanceHandler(codeInstance)
             self.takeItem(rowID)
-            self.codeInstances.remove(codeInstance)
         else:
             pass
 
@@ -80,7 +81,7 @@ class CodeInstanceView(QListWidget):
 class DeleteCodeInstanceDialog(QDialog):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("")
+        self.setWindowTitle("Delete Code Reference")
         self.buttonBox = QDialogButtonBox()
         self.buttonBox.addButton(QPushButton('Cancel'), QDialogButtonBox.ButtonRole.RejectRole)
         self.buttonBox.addButton(QPushButton('Delete'), QDialogButtonBox.ButtonRole.AcceptRole)

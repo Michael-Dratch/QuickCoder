@@ -142,6 +142,10 @@ class Editor(QTextEdit):
                 instance.code.color = updatedCode.color
         self.highlightAllCodeInstances()
 
+    def removeCodeInstance(self, codeInstance):
+        self.codeInstances.remove(codeInstance)
+        self.highlightAllCodeInstances()
+
 class Range:
     def __init__(self, start, end):
         self.start = start

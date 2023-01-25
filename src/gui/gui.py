@@ -73,3 +73,6 @@ class GUI(QWidget):
     def selectCodeInstance(self, codeInstance):
         self.editor.setSelection(codeInstance.start, codeInstance.end)
         self.editor.setFocus()
+
+    def removeCodeInstance(self, codeInstance):
+        self.editor.removeCodeInstance(codeInstance)

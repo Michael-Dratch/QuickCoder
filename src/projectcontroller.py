@@ -149,3 +149,7 @@ class ProjectController:
 
     def selectCodeInstance(self, codeInstance):
         self.GUI.selectCodeInstance(codeInstance)
+
+    def deleteCodeInstance(self, codeInstance):
+        self.database.deleteCodeInstance(codeInstance.id)
+        self.GUI.removeCodeInstance(codeInstance)
