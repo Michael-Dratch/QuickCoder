@@ -77,5 +77,5 @@ class GUI(QWidget):
     def removeCodeInstance(self, codeInstance):
         self.editor.removeCodeInstance(codeInstance)
 
-    def getDocumentHtml(self):
-        return self.editor.toHtml()
+    def getDocumentText(self):
+        return self.editor.toPlainText()

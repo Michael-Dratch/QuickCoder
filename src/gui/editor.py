@@ -24,9 +24,7 @@ class Editor(QTextEdit):
 
     def setDocument(self, doc):
         self.documentSet = False
-        print('editor setting doc html')
-        print(doc.html)
-        self.setHtml(doc.html)
+        self.setText(doc.text)
         self.documentSet = True
 
     def setCurrentCode(self, code):

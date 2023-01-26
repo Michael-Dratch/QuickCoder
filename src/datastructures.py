@@ -15,10 +15,10 @@ class Code:
 
 
 class Document:
-    def __init__(self, id, name, html):
+    def __init__(self, id, name, text):
         self.id = id
         self.name = name
-        self.html = html
+        self.text = text
 
     def setName(self, name):
         self.name = name

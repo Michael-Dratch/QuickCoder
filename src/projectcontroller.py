@@ -143,21 +143,24 @@ class ProjectController:
     def createNewDocument(self, name):
         self.saveDocument()
         document = self.database.createDocument(name, self.currentProject.id)
-        self.GUI.addDocument(document)
+        self.currentDoc = document
+        self.GUI.addDocument(self.currentDoc)
+        self.GUI.setCodeInstances([])
 
     def saveDocument(self):
-        html = self.GUI.getDocumentHtml()
-        print('saving doc current html:')
-        print(html)
-        self.database.updateDocumentHtml(self.currentDoc.id, html)
-        print('saved html')
-        doc = self.database.getDocumentByID(self.currentDoc.id)
-        print(doc.html)
+        text = self.GUI.getDocumentText()
+        self.database.updateDocumentText(self.currentDoc.id, text)
+
     def changeSelectedDoc(self, selectedDoc):
         self.saveDocument()
         document = self.database.getDocumentByID(selectedDoc.id)
         self.currentDoc = document
         self.GUI.setCurrentDoc(self.currentDoc)
+        documentCodeInstances = self.database.getDocumentCodeInstances(self.currentDoc.id)
+        self.GUI.setCodeInstances(documentCodeInstances)
+        filteredInstances = self.database.getDocumentCodeInstancesByCode(self.currentDoc.id, self.currentCode.id)
+        self.GUI.setListedCodeInstances(filteredInstances)
+
 
     def selectCodeInstance(self, codeInstance):
         self.GUI.selectCodeInstance(codeInstance)

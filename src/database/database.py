@@ -39,7 +39,7 @@ class Database:
     def createDocumentTable(self):
         self.createTable('document', '(id integer PRIMARY KEY, '
                                      'name text, '
-                                     'html text, '
+                                     'text text, '
                                      'project integer, '
                                      'FOREIGN KEY (project) REFERENCES project (id) ON DELETE CASCADE)')
 
@@ -173,8 +173,8 @@ class Database:
     def createDocument(self, name, projectID):
         if self.documentExistsByName(name, projectID):
             raise Exception('Document name already exists')
-        sql = """INSERT INTO document (id, name, html, project) VALUES (NULL, :name, :html, :project)"""
-        self.cursor.execute(sql, {'name': name, 'html': '', 'project': projectID})
+        sql = """INSERT INTO document (id, name, text, project) VALUES (NULL, :name, :text, :project)"""
+        self.cursor.execute(sql, {'name': name, 'text': '', 'project': projectID})
         self.conn.commit()
         docID = self.cursor.lastrowid
         return Document(docID, name, '')
@@ -207,11 +207,11 @@ class Database:
         self.cursor.execute(sql, {'newName': newName, 'id': documentID})
         self.conn.commit()
 
-    def updateDocumentHtml(self, documentID, html):
+    def updateDocumentText(self, documentID, text):
         sql = """UPDATE document 
-                    SET html = :html
+                    SET text = :text
                     WHERE id = :id"""
-        self.cursor.execute(sql, {'html': html, 'id': documentID})
+        self.cursor.execute(sql, {'text': text, 'id': documentID})
         self.conn.commit()
 
     def deleteDocument(self, documentID):
@@ -255,7 +255,7 @@ class Database:
                 WHERE document=:documentID"""
         self.cursor.execute(sql, {'documentID': documentID})
         data = self.cursor.fetchall()
-        return self.buildCodeInstanceObject(data)
+        return self.buildCodeInstanceObjects(data)
 
     def getDocumentCodeInstancesByCode(self, documentID, codeID):
         sql = """SELECT code.id, 
@@ -272,9 +272,9 @@ class Database:
                  AND code=:codeID"""
         self.cursor.execute(sql, {'documentID': documentID, 'codeID': codeID})
         data = self.cursor.fetchall()
-        return self.buildCodeInstanceObject(data)
+        return self.buildCodeInstanceObjects(data)
 
-    def buildCodeInstanceObject(self, data):
+    def buildCodeInstanceObjects(self, data):
         codeInstances = []
         for row in data:
             code = Code(row[0], row[1], row[2])
@@ -308,7 +308,7 @@ class Database:
                 WHERE document.project=:projectID"""
         self.cursor.execute(sql, {'projectID': projectID})
         data = self.cursor.fetchall()
-        return self.buildCodeInstanceObject(data)
+        return self.buildCodeInstanceObjects(data)
 
 
 class DuplicateNameError(Exception):
