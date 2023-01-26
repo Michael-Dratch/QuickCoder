@@ -48,7 +48,9 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     projectController = ProjectController()
 
-    projectView = ProjectView([], projectController.createNewProject, projectController.loadProject)
+    projectView = ProjectView([], projectController.createNewProject,
+                              projectController.loadProject,
+                              projectController.showProjectWindow)
 
     builder = MainWindowBuilder(projectController)
     GUI = builder.build()

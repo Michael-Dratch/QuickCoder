@@ -3,12 +3,13 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QLab
 
 
 class ProjectView(QWidget):
-    def __init__(self, projects, newProjectHandler, loadProjectHandler):
+    def __init__(self, projects, newProjectHandler, loadProjectHandler, showProjectWindow):
         super().__init__()
         self.setWindowTitle('QuickCode')
         self.projects = projects
         self.newProjectHandler = newProjectHandler
         self.loadProjectHandler = loadProjectHandler
+        self.showProjectWindow = showProjectWindow
         self.buildWindow()
 
     def buildWindow(self):
@@ -25,9 +26,12 @@ class ProjectView(QWidget):
         self.setLayout(layout)
 
     def getNewProjectName(self):
-        self.createProjectWindow = CreateProjectWindow(self.projects, self.newProjectHandler)
+        self.createProjectWindow = CreateProjectWindow(self.projects, self.newProjectHandler, self.closeProjectView)
         self.createProjectWindow.show()
 
+    def closeProjectView(self):
+        self.showProjectWindow()
+        self.close()
     def itemClicked(self, item):
         project = self.getProjectByName(item.text())
         self.loadProjectHandler(project)
@@ -39,10 +43,11 @@ class ProjectView(QWidget):
 
 
 class CreateProjectWindow(QWidget):
-    def __init__(self, projects, newProjectHandler):
+    def __init__(self, projects, newProjectHandler, closeProjectView):
         super().__init__()
         self.projects = projects
         self.newProjectHandler = newProjectHandler
+        self.closeProjectView = closeProjectView
         self.errorMessageShowing = False
         self.setWindowTitle('New Project')
         self.layout = QVBoxLayout()
@@ -68,6 +73,7 @@ class CreateProjectWindow(QWidget):
                 self.errorMessageShowing = True
         else:
             self.newProjectHandler(name)
+            self.closeProjectView()
             self.close()
 
     def nameExists(self, name):

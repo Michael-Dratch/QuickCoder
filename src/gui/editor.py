@@ -6,10 +6,9 @@ from PyQt6.QtGui import QTextCharFormat, QTextFormat, QColor, QTextCursor, QShor
 
 
 class Editor(QTextEdit):
-    def __init__(self, parent, createCodeInstanceHandler, saveCodeInstancesHandler):
+    def __init__(self, parent, createCodeInstanceHandler):
         super(Editor, self).__init__(parent)
         self.createCodeInstanceHandler = createCodeInstanceHandler
-        self.saveCodeInstancesHandler = saveCodeInstancesHandler
         self.codeInstances = []
         self.currentCode = None
         self.setStyleSheet("padding: 20px;"
@@ -62,7 +61,6 @@ class Editor(QTextEdit):
         self.setFocus()
 
     def codeSelectedText(self):
-        print(self.currentCode)
         if self.currentCode is None:
             return
         range = self.getSelectedRange()

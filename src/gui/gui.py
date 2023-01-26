@@ -71,6 +71,9 @@ class GUI(QWidget):
     def addCodeInstance(self, codeInstance):
         self.codeInstanceView.addCodeInstance(codeInstance)
 
+    def codeSelectedText(self):
+        self.editor.codeSelectedText()
+
     def selectCodeInstance(self, codeInstance):
         self.editor.setSelection(codeInstance.start, codeInstance.end)
         self.editor.setFocus()
@@ -92,3 +95,4 @@ class GUI(QWidget):
 
     def paste(self):
         self.editor.paste()
+

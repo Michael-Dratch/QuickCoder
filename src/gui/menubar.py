@@ -1,24 +1,23 @@
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QAction
 
+
 class MenuBar(QMenuBar):
     def __init__(self, parent, controller):
         super(MenuBar, self).__init__(parent)
         self.controller = controller
         self.addMenus()
 
-
     def addMenus(self):
         self.addMenu(self.createFileMenu())
         self.addMenu(self.createEditMenu())
-        self.addMenu(self.createHelpMenu())
 
     def createFileMenu(self):
         fileMenu = QMenu("File", self)
-        #newAction = self.createAction("New", self.parent().newFile)
+        # newAction = self.createAction("New", self.parent().newFile)
 
         newDocumentAction = self.createAction("New Document", self.controller.createDocumentButtonHandler)
-        newProjectAction = self.createAction("New Project", self.controller.createNewProject)
+        newProjectAction = self.createAction("New Project", self.controller.showNewProjectWindow)
         loadAction = self.createAction("Open Project", self.controller.showLoadProjectWindow)
         saveAction = self.createAction("Save", self.controller.saveDocument)
         exitAction = self.createAction("Exit", self.controller.exit)
@@ -37,14 +36,10 @@ class MenuBar(QMenuBar):
         cutAction = self.createAction('Cut', self.controller.cutSelectedText)
         pasteAction = self.createAction('Paste', self.controller.paste)
         editMenu.addActions([undoAction, redoAction, cutAction, pasteAction])
+        editMenu.addSeparator()
+        codeAction = self.createAction('Code text  ctrl+H', self.controller.codeSelectedText)
+        editMenu.addAction(codeAction)
         return editMenu
-
-    def createHelpMenu(self):
-        helpMenu = QMenu("Help", self)
-        return helpMenu
-
-
-
 
     def createAction(self, label, slot):
         action = QAction(self)

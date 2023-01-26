@@ -29,6 +29,7 @@ class DocumentListView(QListWidget):
 
     def setDocuments(self, documents):
         self.documents = documents
+        self.clear()
         for doc in self.documents:
             self.addItem(doc.name)
 

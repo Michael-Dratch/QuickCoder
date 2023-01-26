@@ -35,7 +35,7 @@ class MainWindowBuilder:
                                         self.controller.updateCode,
                                         self.controller.deleteCode)
 
-        gui.editor = Editor(gui, self.controller.createCodeInstance, self.controller.saveCodeInstances)
+        gui.editor = Editor(gui, self.controller.createCodeInstance)
 
         gui.codeInstanceView = CodeInstanceView(self.controller.selectCodeInstance, self.controller.deleteCodeInstance)
 

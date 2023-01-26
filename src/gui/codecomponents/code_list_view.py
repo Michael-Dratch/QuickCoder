@@ -30,6 +30,7 @@ class CodeListView(QListWidget):
 
     def setCodes(self, codes):
         self.codes = codes
+        self.clear()
         for code in self.codes:
             self.addCodeToListView(code)
 

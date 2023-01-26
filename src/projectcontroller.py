@@ -1,5 +1,6 @@
 from src.datastructures import Project, Document, CodeInstance, Sentiment
 from src.gui.exitdialog import ExitDialog
+from src.gui.projectview import CreateProjectWindow
 
 
 class ProjectController:
@@ -39,11 +40,20 @@ class ProjectController:
         self.projectDocs = [self.currentDoc]
         self.GUI.setDocuments(self.projectDocs)
         self.GUI.setCurrentDoc(self.currentDoc)
-        self.GUI.editor.setText('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+        self.GUI.editor.setText(
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
 
         self.GUI.setCodeInstances([])
         self.GUI.show()
         self.projectView.close()
+
+    def showNewProjectWindow(self):
+        projects = self.database.getProjects()
+        self.createProjectWindow = CreateProjectWindow(projects, self.createNewProject, self.closeCreateProjectWindow)
+        self.createProjectWindow.show()
+
+    def closeCreateProjectWindow(self):
+        self.createProjectWindow.close()
 
     def createNewProject(self, name):
         project = self.database.createProject(name)
@@ -57,8 +67,9 @@ class ProjectController:
         self.GUI.setDocuments(self.projectDocs)
         self.GUI.setCurrentDoc(self.currentDoc)
         self.GUI.setCodeInstances([])
+
+    def showProjectWindow(self):
         self.GUI.show()
-        self.projectView.close()
 
     def changeDocName(self, doc, newName):
         self.database.updateDocumentName(doc.id, newName, self.currentProject.id)
@@ -72,6 +83,7 @@ class ProjectController:
         self.GUI.setSelectedCode(code)
         filteredInstances = self.database.getDocumentCodeInstancesByCode(self.currentDoc.id, self.currentCode.id)
         self.GUI.setListedCodeInstances(filteredInstances)
+
     def updateCode(self, code, newName, color):
         self.database.updateCode(code.id, newName, color)
         updatedCode = self.database.getCode(code.id)
@@ -89,8 +101,8 @@ class ProjectController:
             self.currentCode = None
         self.projectCodes.remove(code)
 
-    def saveCodeInstances(self, codeInstances):
-        print('saving codes')
+    def codeSelectedText(self):
+        self.GUI.codeSelectedText()
 
     def createCodeInstance(self, start, end, text):
         codeInstance = self.database.createCodeInstance(self.currentDoc,
@@ -101,17 +113,11 @@ class ProjectController:
                                                         None)
         self.GUI.addCodeInstance(codeInstance)
 
-    def createNewDocument(self):
-        print('creating new document')
-
     def loadProject(self, project):
         print('loading ' + project.name)
 
     def showLoadProjectWindow(self):
         print('showing load project window')
-
-    def saveDocument(self):
-        print('saving document')
 
     def exit(self):
         dlg = ExitDialog()
@@ -166,7 +172,6 @@ class ProjectController:
         if self.currentCode:
             filteredInstances = self.database.getDocumentCodeInstancesByCode(self.currentDoc.id, self.currentCode.id)
             self.GUI.setListedCodeInstances(filteredInstances)
-
 
     def selectCodeInstance(self, codeInstance):
         self.GUI.selectCodeInstance(codeInstance)
