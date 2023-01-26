@@ -62,6 +62,9 @@ class Editor(QTextEdit):
         self.setFocus()
 
     def codeSelectedText(self):
+        print(self.currentCode)
+        if self.currentCode is None:
+            return
         range = self.getSelectedRange()
         if range.start == range.end:
             return
@@ -143,6 +146,11 @@ class Editor(QTextEdit):
         self.highlightAllCodeInstances()
 
     def removeCodeInstance(self, codeInstance):
+        print('removing code instance')
+        print('current code instance')
+        for i in self.codeInstances:
+            print(i.text)
+        print('instance to delete:' + codeInstance.text)
         self.codeInstances.remove(codeInstance)
         self.highlightAllCodeInstances()
 

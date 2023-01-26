@@ -60,7 +60,8 @@ class GUI(QWidget):
 
     def removeCode(self, code):
         self.codeListView.removeCode(code)
-
+        if self.editor.currentCode == code:
+            self.editor.currentCode = None
     def setSelectedCode(self, code):
         self.editor.setCurrentCode(code)
 
@@ -79,3 +80,15 @@ class GUI(QWidget):
 
     def getDocumentText(self):
         return self.editor.toPlainText()
+
+    def undoTyping(self):
+        self.editor.undo()
+
+    def redoTyping(self):
+        self.editor.redo()
+
+    def cutSelectedText(self):
+        self.editor.cut()
+
+    def paste(self):
+        self.editor.paste()

@@ -1,4 +1,5 @@
 from src.datastructures import Project, Document, CodeInstance, Sentiment
+from src.gui.exitdialog import ExitDialog
 
 
 class ProjectController:
@@ -113,19 +114,23 @@ class ProjectController:
         print('saving document')
 
     def exit(self):
-        print('exiting')
+        dlg = ExitDialog()
+        if dlg.exec():
+            self.GUI.close()
+        else:
+            pass
 
     def undoTyping(self):
-        print('undo')
+        self.GUI.undoTyping()
 
     def redoTyping(self):
-        print('redo')
+        self.GUI.redoTyping()
 
     def cutSelectedText(self):
-        print('cut')
+        self.GUI.cutSelectedText()
 
     def paste(self):
-        print('paste')
+        self.GUI.paste()
 
     def createCodeButtonHandler(self):
         self.GUI.showCreateCodeWindow(self.projectCodes, self.createNewCode)
@@ -158,8 +163,9 @@ class ProjectController:
         self.GUI.setCurrentDoc(self.currentDoc)
         documentCodeInstances = self.database.getDocumentCodeInstances(self.currentDoc.id)
         self.GUI.setCodeInstances(documentCodeInstances)
-        filteredInstances = self.database.getDocumentCodeInstancesByCode(self.currentDoc.id, self.currentCode.id)
-        self.GUI.setListedCodeInstances(filteredInstances)
+        if self.currentCode:
+            filteredInstances = self.database.getDocumentCodeInstancesByCode(self.currentDoc.id, self.currentCode.id)
+            self.GUI.setListedCodeInstances(filteredInstances)
 
 
     def selectCodeInstance(self, codeInstance):
