@@ -142,7 +142,7 @@ class DocumentTableTest(TestBase):
         oldName = 'oldName'
         newName = 'newName'
         self.db.createDocument(oldName, 1)
-        self.db.updateDocument(1, newName, 1)
+        self.db.updateDocumentName(1, newName, 1)
         self.assertFalse(self.documentExistsByName(oldName))
         self.assertTrue(self.documentExistsByName(newName))
 
@@ -152,7 +152,7 @@ class DocumentTableTest(TestBase):
         self.db.createDocument(oldName, 1)
         self.db.createDocument(newName, 1)
         with self.assertRaises(Exception):
-            self.db.updateDocument(1, newName, 1)
+            self.db.updateDocumentName(1, newName, 1)
 
     def test_update_document_duplicate_name_different_project_allowed(self):
         self.db.createProject('project2')
@@ -160,7 +160,7 @@ class DocumentTableTest(TestBase):
         newName = 'newName'
         self.db.createDocument(oldName, 1)
         self.db.createDocument(newName, 2)
-        self.db.updateDocument(1, newName, 1)
+        self.db.updateDocumentName(1, newName, 1)
 
     def test_delete_document(self):
         self.db.createDocument('doc', 1)

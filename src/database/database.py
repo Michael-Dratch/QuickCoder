@@ -173,8 +173,8 @@ class Database:
     def createDocument(self, name, projectID):
         if self.documentExistsByName(name, projectID):
             raise Exception('Document name already exists')
-        sql = """INSERT INTO document (id, name, project) VALUES (NULL, :name, :project)"""
-        self.cursor.execute(sql, {'name': name, 'project': projectID})
+        sql = """INSERT INTO document (id, name, html, project) VALUES (NULL, :name, :html, :project)"""
+        self.cursor.execute(sql, {'name': name, 'html': '', 'project': projectID})
         self.conn.commit()
         docID = self.cursor.lastrowid
         return Document(docID, name, '')
@@ -198,13 +198,20 @@ class Database:
         documents = self.cursor.fetchall()
         return len(documents) > 0
 
-    def updateDocument(self, documentID, newName, projectID):
+    def updateDocumentName(self, documentID, newName, projectID):
         if self.documentExistsByName(newName, projectID):
             raise DuplicateNameError()
         sql = """UPDATE document
                            SET name = :newName
                            WHERE id = :id"""
         self.cursor.execute(sql, {'newName': newName, 'id': documentID})
+        self.conn.commit()
+
+    def updateDocumentHtml(self, documentID, html):
+        sql = """UPDATE document 
+                    SET html = :html
+                    WHERE id = :id"""
+        self.cursor.execute(sql, {'html': html, 'id': documentID})
         self.conn.commit()
 
     def deleteDocument(self, documentID):

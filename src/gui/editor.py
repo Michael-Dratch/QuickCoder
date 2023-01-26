@@ -24,6 +24,8 @@ class Editor(QTextEdit):
 
     def setDocument(self, doc):
         self.documentSet = False
+        print('editor setting doc html')
+        print(doc.html)
         self.setHtml(doc.html)
         self.documentSet = True
 
@@ -145,6 +147,7 @@ class Editor(QTextEdit):
     def removeCodeInstance(self, codeInstance):
         self.codeInstances.remove(codeInstance)
         self.highlightAllCodeInstances()
+
 
 class Range:
     def __init__(self, start, end):

@@ -60,7 +60,7 @@ class ProjectController:
         self.projectView.close()
 
     def changeDocName(self, doc, newName):
-        self.database.updateDocument(doc.id, newName, self.currentProject.id)
+        self.database.updateDocumentName(doc.id, newName, self.currentProject.id)
 
     def deleteDoc(self, doc):
         self.database.deleteDocument(doc.id)
@@ -141,11 +141,23 @@ class ProjectController:
         self.GUI.showCreateDocumentWindow(self.projectDocs, self.createNewDocument)
 
     def createNewDocument(self, name):
+        self.saveDocument()
         document = self.database.createDocument(name, self.currentProject.id)
         self.GUI.addDocument(document)
 
-    def changeSelectedDoc(self, doc):
-        self.GUI.setCurrentDoc(doc)
+    def saveDocument(self):
+        html = self.GUI.getDocumentHtml()
+        print('saving doc current html:')
+        print(html)
+        self.database.updateDocumentHtml(self.currentDoc.id, html)
+        print('saved html')
+        doc = self.database.getDocumentByID(self.currentDoc.id)
+        print(doc.html)
+    def changeSelectedDoc(self, selectedDoc):
+        self.saveDocument()
+        document = self.database.getDocumentByID(selectedDoc.id)
+        self.currentDoc = document
+        self.GUI.setCurrentDoc(self.currentDoc)
 
     def selectCodeInstance(self, codeInstance):
         self.GUI.selectCodeInstance(codeInstance)
