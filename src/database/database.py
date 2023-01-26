@@ -225,7 +225,7 @@ class Database:
         data = self.cursor.fetchall()
         docs = []
         for docObject in data:
-            document = Document(docObject[0], docObject[1], "")
+            document = Document(docObject[0], docObject[1], docObject[2])
             docs.append(document)
         return docs
 

@@ -5,7 +5,7 @@ from src.datastructures import Document, Code, CodeInstance, Sentiment, Project
 from src.gui.mainwindowbuilder import MainWindowBuilder
 from projectcontroller import ProjectController
 from database.database import Database
-from src.gui.projectview import ProjectView
+from src.gui.projectcomponents.projectview import ProjectView
 
 
 # testing functions
@@ -48,9 +48,13 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     projectController = ProjectController()
 
-    projectView = ProjectView([], projectController.createNewProject,
+    projectView = ProjectView(None,
+                              [],
+                              projectController.createNewProject,
                               projectController.loadProject,
-                              projectController.showProjectWindow)
+                              projectController.showGUI,
+                              projectController.saveProjectName,
+                              projectController.deleteProject)
 
     builder = MainWindowBuilder(projectController)
     GUI = builder.build()

@@ -19,11 +19,11 @@ class CodeListView(QListWidget):
         self.deleteCodeHandler = deleteCodeHandler
         self.setGeometry(0, 0, 100, 600)
         self.codes = []
-        self.currentItemChanged.connect(self.itemClicked)
+        self.itemClicked.connect(self.itemClickedHandler)
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.on_context_menu)
 
-    def itemClicked(self, item):
+    def itemClickedHandler(self, item):
         if item:
             code = self.getCodeByName(item.text())
             self.codeSelectedHandler(code)

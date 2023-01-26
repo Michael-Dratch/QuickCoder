@@ -1,12 +1,11 @@
 import sys
 import unittest
 
-from PyQt6.QtWidgets import QApplication, QWidget
+from PyQt6.QtWidgets import QApplication
 
 from datastructures import *
 from src.database.database import Database
 from src.gui.mainwindowbuilder import MainWindowBuilder
-from src.gui.projectview import ProjectView
 from src.projectcontroller import ProjectController
 
 

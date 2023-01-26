@@ -1,6 +1,5 @@
-from src.datastructures import Project, Document, CodeInstance, Sentiment
 from src.gui.exitdialog import ExitDialog
-from src.gui.projectview import CreateProjectWindow
+from src.gui.projectcomponents.projectview import CreateProjectWindow, LoadProjectView, ProjectView
 
 
 class ProjectController:
@@ -27,22 +26,18 @@ class ProjectController:
         self.projectView = projectView
 
     def createNewTestProject(self, name):
-        project = self.database.createProject(name)
-        self.currentProject = project
+        self.currentProject = self.database.createProject(name)
         self.GUI.setProject(self.currentProject)
-        document = self.database.createDocument('New Document', self.currentProject.id)
-        self.currentDoc = document
-        code1 = self.database.createCode('code1', '#00FF00', self.currentProject.id)
-        self.currentCode = code1
-        self.projectCodes = [code1]
-        self.GUI.setCodes(self.projectCodes)
-        self.GUI.setSelectedCode(code1)
+        self.currentDoc = self.database.createDocument('New Document', self.currentProject.id)
         self.projectDocs = [self.currentDoc]
         self.GUI.setDocuments(self.projectDocs)
         self.GUI.setCurrentDoc(self.currentDoc)
+        self.currentCode = self.database.createCode('code1', '#00FF00', self.currentProject.id)
+        self.projectCodes = [self.currentCode]
+        self.GUI.setCodes(self.projectCodes)
+        self.GUI.setSelectedCode(self.currentCode)
         self.GUI.editor.setText(
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
-
         self.GUI.setCodeInstances([])
         self.GUI.show()
         self.projectView.close()
@@ -55,21 +50,71 @@ class ProjectController:
     def closeCreateProjectWindow(self):
         self.createProjectWindow.close()
 
+    def showGUI(self):
+        self.GUI.show()
+
     def createNewProject(self, name):
-        project = self.database.createProject(name)
-        self.currentProject = project
+        self.saveDocument()
+        self.currentProject = self.database.createProject(name)
         self.GUI.setProject(self.currentProject)
-        document = self.database.createDocument('New Document', self.currentProject.id)
-        self.currentDoc = document
-        self.projectCodes = []
-        self.GUI.setCodes(self.projectCodes)
+        self.currentDoc = self.database.createDocument('New Document', self.currentProject.id)
         self.projectDocs = [self.currentDoc]
         self.GUI.setDocuments(self.projectDocs)
         self.GUI.setCurrentDoc(self.currentDoc)
+        self.projectCodes = []
+        self.GUI.setCodes(self.projectCodes)
         self.GUI.setCodeInstances([])
 
-    def showProjectWindow(self):
-        self.GUI.show()
+    def loadProject(self, project):
+        self.saveDocument()
+        self.currentProject = project
+        self.GUI.setProject(project)
+        self.loadDocuments(project)
+        self.loadCodes(project)
+        self.loadCodeInstances(project)
+
+    def loadDocuments(self, project):
+        self.projectDocs = self.database.getProjectDocuments(project.id)
+        self.GUI.setDocuments(self.projectDocs)
+        self.currentDoc = self.projectDocs[0]
+        self.GUI.setCurrentDoc(self.currentDoc)
+
+    def loadCodes(self, project):
+        self.projectCodes = self.database.getProjectCodes(project.id)
+        self.GUI.setCodes(self.projectCodes)
+        self.currentCode = None
+
+    def loadCodeInstances(self, project):
+        codeInstances = self.database.getProjectCodeInstances(project.id)
+        self.GUI.setCodeInstances(codeInstances)
+
+    def showLoadProjectWindow(self):
+        projects = self.database.getProjects()
+        self.loadProjectWindow = LoadProjectView(self.currentProject,
+                                                 projects,
+                                                 self.loadProject,
+                                                 self.saveProjectName,
+                                                 self.deleteProject)
+        self.loadProjectWindow.show()
+
+    def saveProjectName(self, project, newName):
+        self.database.updateProject(project.id, newName)
+        if project.id == self.currentProject.id:
+            self.GUI.setProject(project)
+
+    def deleteProject(self, project):
+        self.database.deleteProject(project.id)
+        if self.currentProject.id == project.id:
+            projects = self.database.getProjects()
+            self.projectView = ProjectView(self.currentProject,
+                                           projects,
+                                           self.createNewProject,
+                                           self.loadProject,
+                                           self.showGUI,
+                                           self.saveProjectName,
+                                           self.deleteProject)
+            self.projectView.show()
+            self.GUI.close()
 
     def changeDocName(self, doc, newName):
         self.database.updateDocumentName(doc.id, newName, self.currentProject.id)
@@ -113,12 +158,6 @@ class ProjectController:
                                                         None)
         self.GUI.addCodeInstance(codeInstance)
 
-    def loadProject(self, project):
-        print('loading ' + project.name)
-
-    def showLoadProjectWindow(self):
-        print('showing load project window')
-
     def exit(self):
         dlg = ExitDialog()
         if dlg.exec():
@@ -159,8 +198,9 @@ class ProjectController:
         self.GUI.setCodeInstances([])
 
     def saveDocument(self):
-        text = self.GUI.getDocumentText()
-        self.database.updateDocumentText(self.currentDoc.id, text)
+        if self.currentDoc:
+            text = self.GUI.getDocumentText()
+            self.database.updateDocumentText(self.currentDoc.id, text)
 
     def changeSelectedDoc(self, selectedDoc):
         self.saveDocument()
