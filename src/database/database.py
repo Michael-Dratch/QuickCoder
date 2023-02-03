@@ -1,5 +1,5 @@
 import sqlite3
-from src.datastructures import Code, Project, Document, CodeInstance
+from src.datastructures import Code, Project, Document, CodeInstance, Category
 
 
 class Database:
@@ -30,6 +30,8 @@ class Database:
     def initializeTables(self):
         self.createProjectTable()
         self.createDocumentTable()
+        self.createCategoryTable()
+        self.createDocCategoryTable()
         self.createCodeTable()
         self.createCodeInstanceTable()
 
@@ -42,6 +44,17 @@ class Database:
                                      'text text, '
                                      'project integer, '
                                      'FOREIGN KEY (project) REFERENCES project (id) ON DELETE CASCADE)')
+
+    def createCategoryTable(self):
+        self.createTable('category', '(id integer PRIMARY KEY,'
+                                     'name text)')
+
+    def createDocCategoryTable(self):
+        self.createTable('doc_category', '(docID int,'
+                                         'categoryID int,'
+                                         'PRIMARY KEY (docID, categoryID),'
+                                         'FOREIGN KEY (docID) REFERENCES document (id) ON DELETE CASCADE,'
+                                         'FOREIGN KEY (categoryID) REFERENCES category (id) ON DELETE CASCADE)')
 
     def createCodeTable(self):
         self.createTable('code', '(id integer PRIMARY KEY, '
@@ -87,6 +100,7 @@ class Database:
         codeData = self.cursor.fetchone()
         code = Code(codeData[0], codeData[1], codeData[2])
         return code
+
     def codeExistsByID(self, codeID):
         self.cursor.execute("""SELECT * FROM code WHERE id=:codeID""",
                             {'codeID': codeID})
@@ -229,6 +243,51 @@ class Database:
             docs.append(document)
         return docs
 
+    def createCategory(self, name):
+        sql = """INSERT INTO category (id, name)
+                    VALUES(NULL, :name)"""
+        self.cursor.execute(sql, {'name': name})
+        self.conn.commit()
+        category = Category(self.cursor.lastrowid, name)
+        return category
+
+    def deleteCategory(self, categoryID):
+        sql = """DELETE FROM category WHERE id=:categoryID"""
+        self.cursor.execute(sql, {'categoryID': categoryID})
+        self.conn.commit()
+
+    def updateCategoryName(self, categoryID, newName):
+        sql = """UPDATE category
+                    SET name = :newName
+                    WHERE id = :categoryID"""
+        self.cursor.execute(sql, {'newName': newName, 'categoryID': categoryID})
+
+    def createDocCategory(self, docID, categoryID):
+        sql = """INSERT INTO doc_category(docID, categoryID)
+                    VALUES (:docID, :categoryID)"""
+        self.cursor.execute(sql, {'docID': docID, 'categoryID': categoryID})
+        self.conn.commit()
+
+    def deleteDocCategory(self, docID, categoryID):
+        sql = """DELETE FROM doc_category
+                    WHERE docID = :docID
+                    AND categoryID = :categoryID"""
+        self.cursor.execute(sql, {'docID': docID, 'categoryID': categoryID})
+        self.conn.commit()
+
+    def getDocumentCategories(self, docID):
+        sql = """SELECT c.id, c.name 
+                FROM doc_category d JOIN category c ON d.categoryID = c.id
+                WHERE docID = :docID"""
+        self.cursor.execute(sql, {'docID': docID})
+        data = self.cursor.fetchall()
+        categories = []
+        for item in data:
+            category = Category(item[0], item[1])
+            categories.append(category)
+        return categories
+
+
     def createCodeInstance(self, document, code, text, start, end, sentiment):
         sql = """INSERT INTO codeinstance (id, document, code, text, start, end, sentiment) 
                     VALUES (NULL, :documentID, :codeID, :text, :start, :end, :sentiment)"""
@@ -241,6 +300,7 @@ class Database:
         self.conn.commit()
         codeInstance = CodeInstance(self.cursor.lastrowid, text, start, end, None, code)
         return codeInstance
+
     def getDocumentCodeInstances(self, documentID):
         sql = """SELECT code.id, 
                         code.name, 
@@ -291,7 +351,6 @@ class Database:
         sql = """DELETE FROM codeinstance WHERE code=:codeID"""
         self.cursor.execute(sql, {'codeID': codeID})
         self.conn.commit()
-
 
     def getProjectCodeInstances(self, projectID):
         sql = """SELECT code.id, 

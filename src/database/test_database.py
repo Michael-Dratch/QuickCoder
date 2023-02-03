@@ -118,6 +118,7 @@ class ProjectTableTest(TestBase):
         projects = self.db.getProjects()
         self.assertEqual(projects[0].name, 'newName')
 
+
 #
 class DocumentTableTest(TestBase):
 
@@ -178,7 +179,6 @@ class DocumentTableTest(TestBase):
         self.assertEqual(len(docs), 2)
 
 
-
 class CodeTableTest(TestBase):
 
     def setUp(self):
@@ -214,17 +214,17 @@ class CodeInstanceTableTest(TestBase):
     def setUp(self):
         super().setUp()
         self.db.createProject('test_project')
-        self.db.createCode('code', '#FF00FF', 1)
-        self.db.createDocument('doc', 1)
+        self.currentCode = self.db.createCode('code', '#FF00FF', 1)
+        self.currentDoc = self.db.createDocument('doc', 1)
 
     def test_create_code_instance(self):
-        self.db.createCodeInstance(1, 1, "test_text", 5, 20, None)
+        self.db.createCodeInstance(self.currentDoc, self.currentCode, "test_text", 5, 20, None)
         self.cursor.execute("""SELECT * FROM codeinstance""")
         codeInstances = self.cursor.fetchall()
         self.assertEqual(len(codeInstances), 1)
 
     def test_get_code_document_instances(self):
-        self.db.createCodeInstance(1, 1, "test_text", 5, 20, None)
+        self.db.createCodeInstance(self.currentDoc, self.currentCode, "test_text", 5, 20, None)
         codeInstance = self.db.getDocumentCodeInstances(1)[0]
         self.assertEqual(codeInstance.text, 'test_text')
         self.assertEqual(codeInstance.start, 5)
@@ -232,7 +232,7 @@ class CodeInstanceTableTest(TestBase):
         self.assertEqual(codeInstance.code.name, 'code')
 
     def test_delete_codeInstance(self):
-        self.db.createCodeInstance(1, 1, "test_text", 5, 20, None)
+        self.db.createCodeInstance(self.currentDoc, self.currentCode, "test_text", 5, 20, None)
         self.db.deleteCodeInstance(1)
         self.cursor.execute("""SELECT * FROM codeinstance""")
         instances = self.cursor.fetchall()
@@ -245,17 +245,76 @@ class CodeInstanceTableTest(TestBase):
         self.assertEqual(len(instances), 0)
 
     def test_get_Project_code_instance(self):
-        self.db.createDocument('doc2', 1)
-        self.db.createCodeInstance(1, 1, 'text', 5, 20, None)
-        self.db.createCodeInstance(2, 1, 'text2', 5, 20, None)
+        doc2 = self.db.createDocument('doc2', 1)
+        self.db.createCodeInstance(self.currentDoc, self.currentCode, 'text', 5, 20, None)
+        self.db.createCodeInstance(doc2, self.currentCode, 'text2', 5, 20, None)
         self.db.createProject('project2')
-        self.db.createDocument('doc3', 2)
-        self.db.createCode('code3', 'color', 2)
-        self.db.createCodeInstance(3, 2, 'project2Instance', 5, 10, None)
+        doc3 = self.db.createDocument('doc3', 2)
+        code3 = self.db.createCode('code3', 'color', 2)
+        self.db.createCodeInstance(doc3, code3, 'project2Instance', 5, 10, None)
         codeInstances = self.db.getProjectCodeInstances(1)
         self.assertEqual(len(codeInstances), 2)
 
 
+class CategoriesTest(TestBase):
+    def createInitialDataForDocCategories(self):
+        self.db.createProject('project1')
+        self.db.createDocument('doc1', 1)
+        self.db.createCategory('category1')
+
+    def assertDocCategoryCorrect(self, data, docID, catID):
+        self.assertEqual(docID, data[0])
+        self.assertEqual(catID, data[1])
+
+    def setUp(self):
+        super().setUp()
+
+    def test_create_category(self):
+        self.db.createCategory('category1')
+        self.cursor.execute("""SELECT * FROM category""")
+        data = self.cursor.fetchall()
+        categoryData = data[0]
+        self.assertEqual(categoryData[0], 1)
+        self.assertEqual(categoryData[1], 'category1')
+
+    def test_delete_category(self):
+        self.db.createCategory('category1')
+        self.db.deleteCategory(1)
+        self.cursor.execute("""SELECT * FROM category""")
+        data = self.cursor.fetchall()
+        self.assertEqual(0, len(data))
+
+    def test_update_category_name(self):
+        self.db.createCategory('old_name')
+        self.db.updateCategoryName(1, 'new_name')
+        self.cursor.execute("""Select * FROM category""")
+        data = self.cursor.fetchone()
+        self.assertEqual('new_name', data[1])
+
+    def test_create_docCategory(self):
+        self.createInitialDataForDocCategories()
+        self.db.createDocCategory(1, 1)
+        self.cursor.execute("""SELECT * FROM doc_category""")
+        data = self.cursor.fetchone()
+        self.assertDocCategoryCorrect(data, 1, 1)
+
+    def test_delete_docCategory(self):
+        self.createInitialDataForDocCategories()
+        self.db.createDocCategory(1, 1)
+        self.db.deleteDocCategory(1, 1)
+        self.cursor.execute("""SELECT * FROM doc_category""")
+        data = self.cursor.fetchall()
+        self.assertEqual(0, len(data))
+
+    def test_get_all_doc_categories(self):
+        self.createInitialDataForDocCategories()
+        self.db.createCategory('category2')
+        self.db.createDocCategory(1, 1)
+        self.db.createDocCategory(1, 2)
+        categories = self.db.getDocumentCategories(1)
+        self.assertEqual(2, len(categories))
+        self.assertEqual(categories[0].name, 'category1')
+        self.assertEqual(categories[1].name, 'category2')
 
 if __name__ == '__main__':
     unittest.main()

@@ -33,6 +33,12 @@ class Document:
         return self.id
 
 
+class Category:
+    def __init__(self, categoryId, name):
+        self.id = categoryId
+        self.name = name
+
+
 class CodeInstance:
     def __init__(self, id, text, start, end, sentiment, code):
         self.id = id
@@ -50,4 +56,3 @@ class Sentiment(Enum):
     NEUTRAL = 0
     POSITIVE = 1
     NEGATIVE = 2
-

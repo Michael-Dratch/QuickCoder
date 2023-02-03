@@ -1,7 +1,6 @@
 from functools import partial
 
 from PyQt6 import QtCore, QtGui
-from PyQt6.QtCore import QAbstractListModel
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QLabel, QLineEdit, QHBoxLayout, QMenu
 
 from src.gui.projectcomponents.createprojectwindow import CreateProjectWindow
