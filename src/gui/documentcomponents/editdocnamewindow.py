@@ -6,26 +6,39 @@ from src.gui.documentcomponents.documentwindowbase import DocumentWindowBase
 
 
 class EditDocNameWindow(DocumentWindowBase):
-    def __init__(self, doc, documents, saveNameHandler, changeDocLabelHandler):
+    def __init__(self, item, docName, docID, saveNameHandler, changeDocLabelHandler):
         super().__init__()
-        self.nameField.setText(doc.name)
+        self.nameField.setText(docName)
         self.setWindowTitle('Change Document Name')
         self.saveButton.clicked.connect(partial(self.saveNameClicked,
-                                                doc,
-                                                documents,
+                                                item,
+                                                docID,
                                                 saveNameHandler,
                                                 changeDocLabelHandler))
 
-    def saveNameClicked(self, doc, documents, saveNameHandler, changeDocLabelHandler):
+    def saveNameClicked(self, item, docID, saveNameHandler, changeDocLabelHandler):
         newName = self.nameField.text()
         if newName == '':
             return
-        if self.nameExists(newName, documents):
-            if not self.errorMessageShowing:
-                self.layout.insertWidget(1, QLabel('Document name already exists'))
-                self.errorMessageShowing = True
         else:
-            saveNameHandler(doc, newName)
-            changeDocLabelHandler(doc, newName)
+            saveNameHandler(docID, newName)
+            changeDocLabelHandler(item, newName)
             self.close()
 
+
+class EditFolderNameWindow(DocumentWindowBase):
+    def __init__(self, item, docName, changeFolderLabelHandler):
+        super().__init__()
+        self.nameField.setText(docName)
+        self.setWindowTitle('Change Folder Name')
+        self.saveButton.clicked.connect(partial(self.saveNameClicked,
+                                                item,
+                                                changeFolderLabelHandler))
+
+    def saveNameClicked(self, item, changeFolderLabelHandler):
+        newName = self.nameField.text()
+        if newName == '':
+            return
+        else:
+            changeFolderLabelHandler(item, newName)
+            self.close()

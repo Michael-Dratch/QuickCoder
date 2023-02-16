@@ -75,10 +75,10 @@ if __name__ == "__main__":
 
     data = {
         'folder1': {},
-        'folder2': {'doc1': None},
+        'folder2': {'doc1': 1},
         'folder3': {'folder4': {}},
-        'folder5': {'folder6': {'doc2': None}},
-        'doc3': None
+        'folder5': {'folder6': {'doc2': 2}},
+        'doc3': 3
     }
 
     """
@@ -92,28 +92,33 @@ if __name__ == "__main__":
         docs = []
         
         Notes:
-        This session i was able to get the parent name of an moved row and the index of the object that was moved
-        I should try to figure out a way to get the name of the object that was moved with this info. Then I think I
-        should be able to update the model without worrying about the order of the docs in each folder
-        
-        The tree structure will be stored as a dictionary. Each folder is its own dictionary, keys are are the names of
-        docs and dictionaries and values are either dictionaries themselves (when folder) or null (when doc) 
-        
-        This null value will be the flag to create this item as a doc when creating the tree
-        
-        it will be helpful to see how much info I can get about the folder path inside the row removed/inserted handlers
-        which can be used for indexing and updating the dictionary
+    
     """
+    def saveDocName(docID, newName):
+        print('saving name')
+        print(docID)
+        print(newName)
+
+    def deleteDoc(docID):
+        print('deleting doc')
+        print(docID)
+
+    def docSelectedHandler(docID):
+        print('selected')
+        print(docID)
+
+    def saveTreeData(treeData):
+        print('saving')
+        print(treeData)
+
     testWindow = QWidget()
-
-
-    tree = DocumentTreeView()
+    tree = DocumentTreeView(docSelectedHandler, saveDocName, deleteDoc, saveTreeData)
     tree.setParent(testWindow)
     tree.setMinimumHeight(500)
+
     tree.setMinimumWidth(300)
 
     tree.setData(data)
-
     def printTreeAndModel():
         tree.printTree()
         data = tree.getTreeData()
