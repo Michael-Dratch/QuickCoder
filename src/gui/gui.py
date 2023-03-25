@@ -7,14 +7,14 @@ from src.gui.documentcomponents.createdocumentwindow import CreateDocumentWindow
 class GUI(QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
-        self.documentListView = None
+        self.documentTreeView = None
         self.documentViewContainer = None
         self.codeListView = None
         self.editor = None
         self.codeInstanceView = None
 
-    def setDocuments(self, docs):
-        self.documentListView.setDocuments(docs)
+    def setDocumentTree(self, docTree):
+        self.documentTreeView.setDocumentTree(docTree)
 
     def setCodes(self, codes):
         self.codeListView.setCodes(codes)
@@ -36,20 +36,15 @@ class GUI(QWidget):
         self.createDocumentWindow.show()
 
     def addDocument(self, document):
-        self.documentListView.documents.append(document)
-        self.documentListView.addItem(document.name)
         self.editor.setDisabled(False)
         self.setCurrentDoc(document)
 
     def setCurrentDoc(self, doc):
-        self.documentListView.setCurrentDoc(doc)
         self.editor.setDocument(doc)
 
-    def removeDoc(self, doc):
-        self.documentListView.removeDoc(doc)
-        if len(self.documentListView.documents) == 0:
-            self.editor.setText('Create new document to start coding.')
-            self.editor.setDisabled(True)
+    def removeDoc(self):
+        self.editor.setText('Select or create document to start coding.')
+        self.editor.setDisabled(True)
 
     def addNewCode(self, code):
         self.codeListView.addNewCode(code)
@@ -83,6 +78,9 @@ class GUI(QWidget):
 
     def getDocumentText(self):
         return self.editor.toPlainText()
+
+    def insertDocument(self, parentItem, document):
+        self.documentTreeView.insertDocument(parentItem, document.name, document.id)
 
     def undoTyping(self):
         self.editor.undo()

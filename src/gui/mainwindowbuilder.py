@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSplitter, QSizePolicy
 from src.gui.codecomponents.codeinstancesview import CodeInstanceView
 from src.gui.codecomponents.codelistview import CodeListView
 from src.gui.documentcomponents.documentlistview import DocumentListView
+from src.gui.documentcomponents.documenttreeview import DocumentTreeView
 from src.gui.documentcomponents.documentviewcontainer import DocumentViewContainer
 from src.gui.gui import GUI
 from src.gui.menubar import MenuBar
@@ -28,9 +29,12 @@ class MainWindowBuilder:
 
     def initializeComponents(self, gui):
         menuBar = MenuBar(gui, self.controller)
-        gui.documentListView = DocumentListView(self.controller.changeSelectedDoc,
-                                                self.controller.changeDocName,
-                                                self.controller.deleteDoc)
+        gui.documentTreeView = DocumentTreeView(self.controller.changeSelectedDoc,
+                                                self.controller.saveDocName,
+                                                self.controller.deleteDoc,
+                                                self.controller.saveTreeData,
+                                                self.controller.createNewDocFromTreeHandler)
+
         gui.codeListView = CodeListView(self.controller.changeSelectedCode,
                                         self.controller.updateCode,
                                         self.controller.deleteCode)
@@ -39,7 +43,7 @@ class MainWindowBuilder:
 
         gui.codeInstanceView = CodeInstanceView(self.controller.selectCodeInstance, self.controller.deleteCodeInstance)
 
-        gui.documentViewContainer = DocumentViewContainer(gui.documentListView)
+        gui.documentViewContainer = DocumentViewContainer(gui.documentTreeView)
 
         codeWindow = QWidget()
         codeWindow.setMaximumWidth(400)

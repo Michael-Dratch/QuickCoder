@@ -1,4 +1,4 @@
-import mimetypes
+import ast
 import os
 from functools import partial
 
@@ -6,6 +6,7 @@ from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QTreeView, QMenu
 from PyQt6.QtGui import QStandardItemModel, QStandardItem, QIcon, QPixmap
 
+from src.gui.documentcomponents.createdocumentwindow import CreateDocumentInFolderWindow, CreateFolderInFolderWindow
 from src.gui.documentcomponents.deletedocumentdialog import DeleteDocumentDialog
 from src.gui.documentcomponents.editdocnamewindow import EditDocNameWindow, EditFolderNameWindow
 
@@ -13,14 +14,16 @@ from src.gui.documentcomponents.editdocnamewindow import EditDocNameWindow, Edit
 def itemIsDocument(item):
     return item.data()[0] == 'DOCUMENT'
 
+
 def itemIsFolder(item):
     return item.data()[0] == 'FOLDER'
 
 
 class DocumentTreeView(QTreeView):
-    def __init__(self, docSelectedHandler, saveDocNameHandler, deleteDocHandler, saveTreeData):
+    def __init__(self, docSelectedHandler, saveDocNameHandler, deleteDocHandler, saveTreeData, createNewDocHandler):
         QTreeView.__init__(self)
-
+        self.setMinimumWidth(300)
+        self.setHeaderHidden(True)
         self.setTreeViewAttributes()
         self.model = QStandardItemModel()
         self.setModel(self.model)
@@ -34,6 +37,7 @@ class DocumentTreeView(QTreeView):
         self.saveDocNameHandler = saveDocNameHandler
         self.deleteDocHandler = deleteDocHandler
         self.saveTreeData = saveTreeData
+        self.createNewDocHandler = createNewDocHandler
 
     def setTreeViewAttributes(self):
         self.setSelectionMode(self.selectionMode().SingleSelection)
@@ -78,6 +82,13 @@ class DocumentTreeView(QTreeView):
         doc.setData(['DOCUMENT', docID])
         doc.setDropEnabled(False)
         return doc
+
+    def insertDocument(self, parentItem, docName, docID):
+        doc = self.createDocItem(docName, docID)
+        parentItem.appendRow(doc)
+        self.updateTreeData()
+        self.saveTreeData(self.treeData)
+        self.docSelectedHandler(docID)
 
     def updateTreeData(self):
         self.treeData = self.getTreeData()
@@ -132,18 +143,18 @@ class DocumentTreeView(QTreeView):
             docName = item.text()
             docID = item.data()[1]
             self.createDocumentContextMenu(item, docName, docID)
-            self.popMenu.exec(self.mapToGlobal(point))
+            self.popupMenu.exec(self.mapToGlobal(point))
         if itemIsFolder(item):
             folderName = item.text()
             self.createFolderContextMenu(item, folderName)
-            self.popMenu.exec(self.mapToGlobal(point))
+            self.popupMenu.exec(self.mapToGlobal(point))
 
     def createDocumentContextMenu(self, item, docName, docID):
-        self.popMenu = QMenu(self)
+        self.popupMenu = QMenu(self)
         editAction = QtGui.QAction('edit name', self)
         deleteAction = QtGui.QAction('delete document', self)
-        self.popMenu.addAction(editAction)
-        self.popMenu.addAction(deleteAction)
+        self.popupMenu.addAction(editAction)
+        self.popupMenu.addAction(deleteAction)
         editAction.triggered.connect(partial(self.showEditWindow, item, docName, docID))
         deleteAction.triggered.connect(partial(self.showDeleteDialog, item, docName, docID))
 
@@ -166,13 +177,33 @@ class DocumentTreeView(QTreeView):
             pass
 
     def createFolderContextMenu(self, item, name):
-        self.popMenu = QMenu(self)
+        self.popupMenu = QMenu(self)
+        newDocumentAction = QtGui.QAction('new document', self)
+        newFolderAction = QtGui.QAction('new folder', self)
         editAction = QtGui.QAction('edit name', self)
         deleteAction = QtGui.QAction('delete folder', self)
-        self.popMenu.addAction(editAction)
-        self.popMenu.addAction(deleteAction)
+        self.popupMenu.addAction(newDocumentAction)
+        self.popupMenu.addAction(newFolderAction)
+        self.popupMenu.addSeparator()
+        self.popupMenu.addAction(editAction)
+        self.popupMenu.addAction(deleteAction)
+        newDocumentAction.triggered.connect(partial(self.showNewDocumentWindow, item))
+        newFolderAction.triggered.connect(partial(self.showNewFolderWindow, item))
         editAction.triggered.connect(partial(self.showEditFolderWindow, item, name))
         deleteAction.triggered.connect(partial(self.showDeleteFolderDialog, item, name))
+
+    def showNewDocumentWindow(self, item):
+        self.newDocumentWindow = CreateDocumentInFolderWindow(item, self.createNewDocHandler)
+        self.newDocumentWindow.show()
+
+    def showNewFolderWindow(self, item):
+        self.newFolderWindow = CreateFolderInFolderWindow(item, self.createNewFolderHandler)
+        self.newFolderWindow.show()
+
+    def createNewFolderHandler(self, parentItem, newName):
+        parentItem.appendRow(self.createFolderItem(newName))
+        self.updateTreeData()
+        self.saveTreeData(self.treeData)
 
     def showEditFolderWindow(self, item, name):
         self.editFolderNameWindow = EditFolderNameWindow(item, name, self.changeItemLabelHandler)
@@ -202,3 +233,9 @@ class DocumentTreeView(QTreeView):
             self.model.takeRow(item.row())
         else:
             parent.takeRow(item.row())
+
+    def setDocumentTree(self, docTree):
+        print('check')
+        print(docTree)
+        treeDict = ast.literal_eval(docTree)
+        self.setData(treeDict)

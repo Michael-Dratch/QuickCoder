@@ -1,5 +1,12 @@
+import json
+
 from src.gui.exitdialog import ExitDialog
 from src.gui.projectcomponents.projectview import CreateProjectWindow, LoadProjectView, ProjectView
+
+"""
+self.controller.saveTreeData,
+self.controller.createNewDocHandler
+"""
 
 
 class ProjectController:
@@ -27,10 +34,20 @@ class ProjectController:
 
     def createNewTestProject(self, name):
         self.currentProject = self.database.createProject(name)
+        self.project2 = self.database.createProject('project2')
+        self.proj2doc1 = self.database.createDocument('doc1proj2', 2)
+
+        proj2Data = str({'doc1proj2': self.proj2doc1.id})
+        print(proj2Data)
+        print(self.database.getDocumentTree(2))
+        self.database.saveDocumentTree(2, proj2Data)
         self.GUI.setProject(self.currentProject)
-        self.currentDoc = self.database.createDocument('New Document', self.currentProject.id)
-        self.projectDocs = [self.currentDoc]
-        self.GUI.setDocuments(self.projectDocs)
+        self.currentDoc = self.database.createDocument('doc1', self.currentProject.id)
+        self.database.createDocument('doc2', self.currentProject.id)
+        self.database.updateDocumentText(2, "document 2 text")
+        data = {'doc1': 1, 'doc2': 2, 'folder': {}}
+        self.database.saveDocumentTree(1, str(data))
+        self.GUI.setDocumentTree(str(data))
         self.GUI.setCurrentDoc(self.currentDoc)
         self.currentCode = self.database.createCode('code1', '#00FF00', self.currentProject.id)
         self.projectCodes = [self.currentCode]
@@ -59,7 +76,7 @@ class ProjectController:
         self.GUI.setProject(self.currentProject)
         self.currentDoc = self.database.createDocument('New Document', self.currentProject.id)
         self.projectDocs = [self.currentDoc]
-        self.GUI.setDocuments(self.projectDocs)
+        # self.GUI.setDocuments(self.projectDocs)
         self.GUI.setCurrentDoc(self.currentDoc)
         self.projectCodes = []
         self.GUI.setCodes(self.projectCodes)
@@ -75,7 +92,10 @@ class ProjectController:
 
     def loadDocuments(self, project):
         self.projectDocs = self.database.getProjectDocuments(project.id)
-        self.GUI.setDocuments(self.projectDocs)
+        docTree = self.database.getDocumentTree(project.id)
+        print(project.id)
+        print(docTree)
+        self.GUI.setDocumentTree(docTree)
         self.currentDoc = self.projectDocs[0]
         self.GUI.setCurrentDoc(self.currentDoc)
 
@@ -102,6 +122,27 @@ class ProjectController:
         if project.id == self.currentProject.id:
             self.GUI.setProject(project)
 
+    def undoTyping(self):
+        self.GUI.undoTyping()
+
+    def redoTyping(self):
+        self.GUI.redoTyping()
+
+    def cutSelectedText(self):
+        self.GUI.cutSelectedText()
+
+    def paste(self):
+        self.GUI.paste()
+
+    def exit(self):
+        dlg = ExitDialog()
+        if dlg.exec():
+            self.GUI.close()
+        else:
+            pass
+
+    ############  CODE METHODS  #################
+
     def deleteProject(self, project):
         self.database.deleteProject(project.id)
         if self.currentProject.id == project.id:
@@ -115,13 +156,6 @@ class ProjectController:
                                            self.deleteProject)
             self.projectView.show()
             self.GUI.close()
-
-    def changeDocName(self, doc, newName):
-        self.database.updateDocumentName(doc.id, newName, self.currentProject.id)
-
-    def deleteDoc(self, doc):
-        self.database.deleteDocument(doc.id)
-        self.GUI.removeDoc(doc)
 
     def changeSelectedCode(self, code):
         self.currentCode = code
@@ -158,25 +192,6 @@ class ProjectController:
                                                         None)
         self.GUI.addCodeInstance(codeInstance)
 
-    def exit(self):
-        dlg = ExitDialog()
-        if dlg.exec():
-            self.GUI.close()
-        else:
-            pass
-
-    def undoTyping(self):
-        self.GUI.undoTyping()
-
-    def redoTyping(self):
-        self.GUI.redoTyping()
-
-    def cutSelectedText(self):
-        self.GUI.cutSelectedText()
-
-    def paste(self):
-        self.GUI.paste()
-
     def createCodeButtonHandler(self):
         self.GUI.showCreateCodeWindow(self.projectCodes, self.createNewCode)
 
@@ -187,9 +202,14 @@ class ProjectController:
         self.GUI.setSelectedCode(code)
         self.GUI.setListedCodeInstances([])
 
-    def createDocumentButtonHandler(self):
-        self.GUI.showCreateDocumentWindow(self.projectDocs, self.createNewDocument)
+    def selectCodeInstance(self, codeInstance):
+        self.GUI.selectCodeInstance(codeInstance)
 
+    def deleteCodeInstance(self, codeInstance):
+        self.database.deleteCodeInstance(codeInstance.id)
+        self.GUI.removeCodeInstance(codeInstance)
+
+    ############  DOCUMENT METHODS  #################
     def createNewDocument(self, name):
         self.saveDocument()
         document = self.database.createDocument(name, self.currentProject.id)
@@ -197,25 +217,39 @@ class ProjectController:
         self.GUI.addDocument(self.currentDoc)
         self.GUI.setCodeInstances([])
 
+    def createDocumentButtonHandler(self):
+        self.GUI.showCreateDocumentWindow(self.projectDocs, self.createNewDocument)
+
+    def saveDocName(self, docID, newName):
+        self.database.updateDocumentName(docID, newName, self.currentProject.id)
+
+    def deleteDoc(self, docID):
+        self.database.deleteDocument(docID)
+        if self.currentDoc.id == docID:
+            self.currentDoc = None
+            self.GUI.removeDoc()
+
+    def saveTreeData(self, treeData):
+        treeDataJson = str(treeData)
+        self.database.saveDocumentTree(self.currentProject.id, treeDataJson)
+
+    def createNewDocFromTreeHandler(self, parentItem, docName):
+        document = self.database.createDocument(docName, self.currentProject.id)
+        self.GUI.insertDocument(parentItem, document)
+        print('creating new doc from tree')
+
     def saveDocument(self):
         if self.currentDoc:
             text = self.GUI.getDocumentText()
             self.database.updateDocumentText(self.currentDoc.id, text)
 
-    def changeSelectedDoc(self, selectedDoc):
+    def changeSelectedDoc(self, docID):
         self.saveDocument()
-        document = self.database.getDocumentByID(selectedDoc.id)
-        self.currentDoc = document
+        selectedDoc = self.database.getDocumentByID(docID)
+        self.currentDoc = selectedDoc
         self.GUI.setCurrentDoc(self.currentDoc)
         documentCodeInstances = self.database.getDocumentCodeInstances(self.currentDoc.id)
         self.GUI.setCodeInstances(documentCodeInstances)
         if self.currentCode:
             filteredInstances = self.database.getDocumentCodeInstancesByCode(self.currentDoc.id, self.currentCode.id)
             self.GUI.setListedCodeInstances(filteredInstances)
-
-    def selectCodeInstance(self, codeInstance):
-        self.GUI.selectCodeInstance(codeInstance)
-
-    def deleteCodeInstance(self, codeInstance):
-        self.database.deleteCodeInstance(codeInstance.id)
-        self.GUI.removeCodeInstance(codeInstance)

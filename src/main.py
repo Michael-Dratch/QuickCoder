@@ -49,89 +49,59 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     projectController = ProjectController()
 
-    # projectView = ProjectView(None,
-    #                           [],
-    #                           projectController.createNewProject,
-    #                           projectController.loadProject,
-    #                           projectController.showGUI,
-    #                           projectController.saveProjectName,
-    #                           projectController.deleteProject)
-    #
-    # builder = MainWindowBuilder(projectController)
-    # GUI = builder.build()
-    # database = Database()
-    # database.initializeDatabase(':memory:')
-    # database.initializeTables()
-    # projectController.setGUI(GUI)
-    # projectController.setDatabase(database)
-    # projectController.setProjectView(projectView)
-    #
-    # projectController.createNewTestProject('project')
+    projectView = ProjectView(None,
+                              [],
+                              projectController.createNewProject,
+                              projectController.loadProject,
+                              projectController.showGUI,
+                              projectController.saveProjectName,
+                              projectController.deleteProject)
 
-    #QTree Widget development
+    builder = MainWindowBuilder(projectController)
+    GUI = builder.build()
+    database = Database()
+    database.initializeDatabase(':memory:')
+    database.initializeTables()
+    projectController.setGUI(GUI)
+    projectController.setDatabase(database)
+    projectController.setProjectView(projectView)
+
+    projectController.createNewTestProject('project')
 
 
-
-
-    data = {
-        'folder1': {},
-        'folder2': {'doc1': 1},
-        'folder3': {'folder4': {}},
-        'folder5': {'folder6': {'doc2': 2}},
-        'doc3': 3
-    }
-
-    """
-    list of items 
-    [doc,
-    folder,
-    folder,
-    doc
+"""
+   TODO:
+   
+    def saveTreeData(self, treeData):
     
-    class Folder:
-        docs = []
-        
-        Notes:
-    
-    """
-    def saveDocName(docID, newName):
-        print('saving name')
-        print(docID)
-        print(newName)
-
-    def deleteDoc(docID):
-        print('deleting doc')
-        print(docID)
-
-    def docSelectedHandler(docID):
-        print('selected')
-        print(docID)
-
-    def saveTreeData(treeData):
-        print('saving')
-        print(treeData)
-
-    testWindow = QWidget()
-    tree = DocumentTreeView(docSelectedHandler, saveDocName, deleteDoc, saveTreeData)
-    tree.setParent(testWindow)
-    tree.setMinimumHeight(500)
-
-    tree.setMinimumWidth(300)
-
-    tree.setData(data)
-    def printTreeAndModel():
-        tree.printTree()
-        data = tree.getTreeData()
-        print('tree model data')
-        print(data)
+"""
 
 
 
-    printButton = QPushButton(testWindow)
-    printButton.setText('Print Tree')
-    printButton.clicked.connect(printTreeAndModel)
+# testWindow = QWidget()
+# tree = DocumentTreeView(docSelectedHandler, saveDocName, deleteDoc, saveTreeData, createNewDocHandler)
+# tree.setParent(testWindow)
+# tree.setMinimumHeight(500)
+#
+# tree.setMinimumWidth(300)
+#
+# tree.setData(data)
+#
+# def insertDocIntoTree(parentItem, docName, docID):
+#     tree.insertDocument(parentItem, docName, docID)
+# def printTreeAndModel():
+#     tree.printTree()
+#     data = tree.getTreeData()
+#     print('tree model data')
+#     print(data)
+#
+#
+#
+# printButton = QPushButton(testWindow)
+# printButton.setText('Print Tree')
+# printButton.clicked.connect(printTreeAndModel)
+#
+# testWindow.show()
 
-    testWindow.show()
-
-    #projectController.start()
-    sys.exit(app.exec())
+projectController.start()
+sys.exit(app.exec())

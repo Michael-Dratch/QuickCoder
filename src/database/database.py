@@ -1,5 +1,6 @@
 import sqlite3
 from src.datastructures import Code, Project, Document, CodeInstance, Category
+import json
 
 
 class Database:
@@ -30,6 +31,7 @@ class Database:
     def initializeTables(self):
         self.createProjectTable()
         self.createDocumentTable()
+        self.createDocumentTreeTable()
         self.createCategoryTable()
         self.createDocCategoryTable()
         self.createCodeTable()
@@ -43,6 +45,11 @@ class Database:
                                      'name text, '
                                      'text text, '
                                      'project integer, '
+                                     'FOREIGN KEY (project) REFERENCES project (id) ON DELETE CASCADE)')
+
+    def createDocumentTreeTable(self):
+        self.createTable('doc_tree', '(project int PRIMARY KEY,'
+                                     'json_tree text,'
                                      'FOREIGN KEY (project) REFERENCES project (id) ON DELETE CASCADE)')
 
     def createCategoryTable(self):
@@ -147,6 +154,7 @@ class Database:
         self.cursor.execute(sql, {'name': name})
         self.conn.commit()
         projectID = self.cursor.lastrowid
+        self.saveNewDocumentTree(projectID, '')
         return Project(projectID, name)
 
     def projectExists(self, projectID):
@@ -183,6 +191,26 @@ class Database:
             project = Project(object[0], object[1])
             projects.append(project)
         return projects
+
+    def saveNewDocumentTree(self, projectID, tree):
+        json_tree = json.dumps(tree)
+        sql = """INSERT INTO doc_tree (project, json_tree) VALUES (:project, :tree)"""
+        self.cursor.execute(sql, {'project': projectID, 'tree': json_tree})
+        self.conn.commit()
+
+    # takes tree as json string
+    def saveDocumentTree(self, projectID, tree):
+        print('projectID')
+        print(projectID)
+        sql = """UPDATE doc_tree SET json_tree = :tree WHERE project = :project"""
+        self.cursor.execute(sql, {'project': projectID, 'tree': tree})
+        self.conn.commit()
+
+    #returns tree as string
+    def getDocumentTree(self, projectID):
+        self.cursor.execute("""SELECT json_tree FROM doc_tree WHERE project = :projectID""", {'projectID': projectID})
+        tree = self.cursor.fetchone()
+        return tree[0]
 
     def createDocument(self, name, projectID):
         if self.documentExistsByName(name, projectID):
@@ -286,7 +314,6 @@ class Database:
             category = Category(item[0], item[1])
             categories.append(category)
         return categories
-
 
     def createCodeInstance(self, document, code, text, start, end, sentiment):
         sql = """INSERT INTO codeinstance (id, document, code, text, start, end, sentiment) 

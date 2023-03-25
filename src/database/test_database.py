@@ -316,5 +316,19 @@ class CategoriesTest(TestBase):
         self.assertEqual(categories[0].name, 'category1')
         self.assertEqual(categories[1].name, 'category2')
 
+class DocTreeTest(TestBase):
+    def setUp(self):
+        super().setUp()
+        self.db.createProject('project')
+        self.data = {
+            'folder1': {},
+            'folder2': {'doc1': 1},
+            'folder3': {'folder4': {}},
+            'folder5': {'folder6': {'doc2': 2}},
+            'doc3': 3
+        }
+    def test_create_doc_table(self):
+        self.db.createNew()
+
 if __name__ == '__main__':
     unittest.main()
