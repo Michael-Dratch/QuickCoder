@@ -1,7 +1,3 @@
-from functools import partial
-
-from PyQt6.QtWidgets import QLabel
-
 from src.gui.documentcomponents.documentwindowbase import DocumentWindowBase
 
 
@@ -32,6 +28,7 @@ class CreateDocumentInFolderWindow(CreateDocumentWindow):
     def callCreateDocHandler(self, newName):
         self.createDocHandler(self.parentItem, newName)
 
+
 class CreateFolderWindow(DocumentWindowBase):
     def __init__(self, createFolderHandler):
         super().__init__()
@@ -49,6 +46,7 @@ class CreateFolderWindow(DocumentWindowBase):
 
     def callCreateFolderHandler(self, newName):
         self.createDocHandler(newName)
+
 
 class CreateFolderInFolderWindow(CreateFolderWindow):
     def __init__(self, parentItem, createFolderHandler):

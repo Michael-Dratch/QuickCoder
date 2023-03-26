@@ -1,13 +1,9 @@
 from functools import partial
-
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QToolButton, QFrame, QStackedLayout, \
     QMenu
-
 from src.gui.documentcomponents.createdocumentwindow import CreateDocumentInFolderWindow, CreateFolderInFolderWindow
-from src.gui.projectcomponents.projectwindow import EditProjectNameWindow
 
 
 class DocumentViewContainer(QWidget):
@@ -56,14 +52,14 @@ class DocumentViewContainer(QWidget):
         newFolderAction.triggered.connect(partial(self.showNewFolderWindow))
         editProjectAction.triggered.connect(partial(self.showEditProjectWindow))
 
-
-
     def showNewDocumentWindow(self):
-        self.newDocumentWindow = CreateDocumentInFolderWindow(self.documentTreeView.getRootItem(), self.documentTreeView.createNewDocHandler)
+        self.newDocumentWindow = CreateDocumentInFolderWindow(self.documentTreeView.getRootItem(),
+                                                              self.documentTreeView.createNewDocHandler)
         self.newDocumentWindow.show()
 
     def showNewFolderWindow(self):
-        self.newFolderWindow = CreateFolderInFolderWindow(self.documentTreeView.getRootItem(), self.documentTreeView.createNewFolderHandler)
+        self.newFolderWindow = CreateFolderInFolderWindow(self.documentTreeView.getRootItem(),
+                                                          self.documentTreeView.createNewFolderHandler)
         self.newFolderWindow.show()
 
     def showEditProjectWindow(self):

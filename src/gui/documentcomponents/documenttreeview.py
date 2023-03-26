@@ -240,5 +240,7 @@ class DocumentTreeView(QTreeView):
 
     def setDocumentTree(self, docTree):
         self.model.clear()
-        treeDict = ast.literal_eval(docTree)
-        self.setData(treeDict)
+        print(len(docTree))
+        if len(docTree) > 2:
+            treeDict = ast.literal_eval(docTree)
+            self.setData(treeDict)

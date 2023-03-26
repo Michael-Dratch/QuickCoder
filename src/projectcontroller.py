@@ -4,11 +4,6 @@ from src.gui.exitdialog import ExitDialog
 from src.gui.projectcomponents.projectview import CreateProjectWindow, LoadProjectView, ProjectView
 from src.gui.projectcomponents.projectwindow import EditProjectNameWindow
 
-"""
-self.controller.saveTreeData,
-self.controller.createNewDocHandler
-"""
-
 
 class ProjectController:
     def __init__(self):
@@ -37,10 +32,7 @@ class ProjectController:
         self.currentProject = self.database.createProject(name)
         self.project2 = self.database.createProject('project2')
         self.proj2doc1 = self.database.createDocument('doc1proj2', 2)
-
         proj2Data = str({'doc1proj2': self.proj2doc1.id})
-        print(proj2Data)
-        print(self.database.getDocumentTree(2))
         self.database.saveDocumentTree(2, proj2Data)
         self.GUI.setProject(self.currentProject)
         self.currentDoc = self.database.createDocument('doc1', self.currentProject.id)
@@ -58,7 +50,7 @@ class ProjectController:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
         self.GUI.setCodeInstances([])
         self.GUI.show()
-        self.projectView.close()
+        #self.projectView.close()
 
     def showNewProjectWindow(self):
         projects = self.database.getProjects()
@@ -81,8 +73,9 @@ class ProjectController:
         self.currentProject = self.database.createProject(name)
         self.GUI.setProject(self.currentProject)
         self.currentDoc = self.database.createDocument('New Document', self.currentProject.id)
-        self.projectDocs = [self.currentDoc]
-        # self.GUI.setDocuments(self.projectDocs)
+        newDocTree = json.dumps({'New Document': self.currentDoc.id})
+        self.database.saveDocumentTree(self.currentProject.id, newDocTree)
+        self.GUI.setDocumentTree(newDocTree)
         self.GUI.setCurrentDoc(self.currentDoc)
         self.projectCodes = []
         self.GUI.setCodes(self.projectCodes)
@@ -99,8 +92,6 @@ class ProjectController:
     def loadDocuments(self, project):
         self.projectDocs = self.database.getProjectDocuments(project.id)
         docTree = self.database.getDocumentTree(project.id)
-        print(project.id)
-        print(docTree)
         self.GUI.setDocumentTree(docTree)
         self.currentDoc = self.projectDocs[0]
         self.GUI.setCurrentDoc(self.currentDoc)
@@ -119,7 +110,6 @@ class ProjectController:
         if project.id == self.currentProject.id:
             project.name = newName
             self.GUI.setProject(project)
-
 
     def loadCodes(self, project):
         self.projectCodes = self.database.getProjectCodes(project.id)
@@ -226,7 +216,7 @@ class ProjectController:
         self.GUI.setCodeInstances([])
 
     def createDocumentButtonHandler(self):
-        self.GUI.showCreateDocumentWindow(self.projectDocs, self.createNewDocument)
+        self.GUI.showCreateDocumentWindow(self.createNewDocument)
 
     def saveDocName(self, docID, newName):
         self.database.updateDocumentName(docID, newName, self.currentProject.id)
@@ -244,7 +234,6 @@ class ProjectController:
     def createNewDocFromTreeHandler(self, parentItem, docName):
         document = self.database.createDocument(docName, self.currentProject.id)
         self.GUI.insertDocument(parentItem, document)
-        print('creating new doc from tree')
 
     def saveDocument(self):
         if self.currentDoc:

@@ -200,8 +200,6 @@ class Database:
 
     # takes tree as json string
     def saveDocumentTree(self, projectID, tree):
-        print('projectID')
-        print(projectID)
         sql = """UPDATE doc_tree SET json_tree = :tree WHERE project = :project"""
         self.cursor.execute(sql, {'project': projectID, 'tree': tree})
         self.conn.commit()

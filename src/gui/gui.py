@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import *
 
 from src.gui.codecomponents.createcodewindow import CreateCodeWindow
-from src.gui.documentcomponents.createdocumentwindow import CreateDocumentWindow
+from src.gui.documentcomponents.createdocumentwindow import CreateDocumentWindow, CreateDocumentInFolderWindow
 
 
 class GUI(QWidget):
@@ -31,9 +31,10 @@ class GUI(QWidget):
         self.createCodeWindow = CreateCodeWindow(codes, createNewCodeHandler)
         self.createCodeWindow.show()
 
-    def showCreateDocumentWindow(self, projectDocuments, createDocHandler):
-        self.createDocumentWindow = CreateDocumentWindow(projectDocuments, createDocHandler)
-        self.createDocumentWindow.show()
+    def showCreateDocumentWindow(self, createDocHandler):
+        self.newDocumentWindow = CreateDocumentInFolderWindow(self.documentTreeView.getRootItem(), self.documentTreeView.createNewDocHandler)
+        self.newDocumentWindow.show()
+
 
     def addDocument(self, document):
         self.editor.setDisabled(False)
