@@ -22,17 +22,16 @@ class ProjectWindowBase(QWidget):
 
 
 class EditProjectNameWindow(ProjectWindowBase):
-    def __init__(self, project, projects, saveNameHandler, changeProjectLabelHandler):
+    def __init__(self, project, projects, saveNameHandler):
         super().__init__()
         self.nameField.setText(project.name)
         self.setWindowTitle('Change Document Name')
         self.saveButton.clicked.connect(partial(self.saveNameClicked,
                                                 project,
                                                 projects,
-                                                saveNameHandler,
-                                                changeProjectLabelHandler))
+                                                saveNameHandler))
 
-    def saveNameClicked(self, project, projects, saveNameHandler, changeProjectLabelHandler):
+    def saveNameClicked(self, project, projects, saveNameHandler):
         newName = self.nameField.text()
         if newName == '':
             return
@@ -42,5 +41,4 @@ class EditProjectNameWindow(ProjectWindowBase):
                 self.errorMessageShowing = True
         else:
             saveNameHandler(project, newName)
-            changeProjectLabelHandler(project, newName)
             self.close()

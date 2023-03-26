@@ -50,6 +50,10 @@ class DocumentTreeView(QTreeView):
         path = os.path.dirname(os.path.abspath(__file__))
         return QIcon(QPixmap(os.path.join(path, 'resources/folder.png')))
 
+    def getRootItem(self):
+        rootItem = self.model.invisibleRootItem()
+        return rootItem
+
     def setData(self, data):
         parentItem = self.model.invisibleRootItem()
         self.setSubTree(data, parentItem)
@@ -235,7 +239,6 @@ class DocumentTreeView(QTreeView):
             parent.takeRow(item.row())
 
     def setDocumentTree(self, docTree):
-        print('check')
-        print(docTree)
+        self.model.clear()
         treeDict = ast.literal_eval(docTree)
         self.setData(treeDict)

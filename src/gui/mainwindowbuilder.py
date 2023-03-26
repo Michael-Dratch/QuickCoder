@@ -43,7 +43,7 @@ class MainWindowBuilder:
 
         gui.codeInstanceView = CodeInstanceView(self.controller.selectCodeInstance, self.controller.deleteCodeInstance)
 
-        gui.documentViewContainer = DocumentViewContainer(gui.documentTreeView)
+        gui.documentViewContainer = DocumentViewContainer(gui.documentTreeView, self.controller.showEditProjectWindow)
 
         codeWindow = QWidget()
         codeWindow.setMaximumWidth(400)

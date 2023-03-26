@@ -2,6 +2,7 @@ import json
 
 from src.gui.exitdialog import ExitDialog
 from src.gui.projectcomponents.projectview import CreateProjectWindow, LoadProjectView, ProjectView
+from src.gui.projectcomponents.projectwindow import EditProjectNameWindow
 
 """
 self.controller.saveTreeData,
@@ -64,6 +65,11 @@ class ProjectController:
         self.createProjectWindow = CreateProjectWindow(projects, self.createNewProject, self.closeCreateProjectWindow)
         self.createProjectWindow.show()
 
+    def showEditProjectWindow(self):
+        self.editNameWindow = EditProjectNameWindow(self.currentProject, self.database.getProjects(),
+                                                    self.saveProjectName)
+        self.editNameWindow.show()
+
     def closeCreateProjectWindow(self):
         self.createProjectWindow.close()
 
@@ -99,15 +105,6 @@ class ProjectController:
         self.currentDoc = self.projectDocs[0]
         self.GUI.setCurrentDoc(self.currentDoc)
 
-    def loadCodes(self, project):
-        self.projectCodes = self.database.getProjectCodes(project.id)
-        self.GUI.setCodes(self.projectCodes)
-        self.currentCode = None
-
-    def loadCodeInstances(self, project):
-        codeInstances = self.database.getProjectCodeInstances(project.id)
-        self.GUI.setCodeInstances(codeInstances)
-
     def showLoadProjectWindow(self):
         projects = self.database.getProjects()
         self.loadProjectWindow = LoadProjectView(self.currentProject,
@@ -120,7 +117,18 @@ class ProjectController:
     def saveProjectName(self, project, newName):
         self.database.updateProject(project.id, newName)
         if project.id == self.currentProject.id:
+            project.name = newName
             self.GUI.setProject(project)
+
+
+    def loadCodes(self, project):
+        self.projectCodes = self.database.getProjectCodes(project.id)
+        self.GUI.setCodes(self.projectCodes)
+        self.currentCode = None
+
+    def loadCodeInstances(self, project):
+        codeInstances = self.database.getProjectCodeInstances(project.id)
+        self.GUI.setCodeInstances(codeInstances)
 
     def undoTyping(self):
         self.GUI.undoTyping()

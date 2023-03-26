@@ -6,12 +6,16 @@ from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QToolButton, QFrame, QStackedLayout, \
     QMenu
 
+from src.gui.documentcomponents.createdocumentwindow import CreateDocumentInFolderWindow, CreateFolderInFolderWindow
+from src.gui.projectcomponents.projectwindow import EditProjectNameWindow
+
 
 class DocumentViewContainer(QWidget):
-    def __init__(self, documentListView):
+    def __init__(self, documentTreeView, editProjectHandler):
         super().__init__()
         self.projectLabel = None
-        self.documentListView = documentListView
+        self.editProjectHandler = editProjectHandler
+        self.documentTreeView = documentTreeView
         self.layout = QStackedLayout()
         self.setLayout(self.layout)
         self.expandedDocView = self.buildExpandedLayout()
@@ -27,17 +31,15 @@ class DocumentViewContainer(QWidget):
         self.projectLabel = QLabel()
         self.projectLabel.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.projectLabel.customContextMenuRequested.connect(self.onProjectContextMenu)
-
         header.addWidget(self.projectLabel)
         hideDocumentsButton = self.buildHideDocumentsButton()
         header.addWidget(hideDocumentsButton)
         documentViewLayout.addLayout(header)
-        documentViewLayout.addWidget(self.documentListView)
+        documentViewLayout.addWidget(self.documentTreeView)
         expandedDocView.setLayout(documentViewLayout)
         return expandedDocView
 
     def onProjectContextMenu(self, point):
-        print('project context menu')
         self.createProjectContextMenu()
         self.popupMenu.exec(self.mapToGlobal(point))
 
@@ -54,14 +56,18 @@ class DocumentViewContainer(QWidget):
         newFolderAction.triggered.connect(partial(self.showNewFolderWindow))
         editProjectAction.triggered.connect(partial(self.showEditProjectWindow))
 
+
+
     def showNewDocumentWindow(self):
-        print('new doc')
+        self.newDocumentWindow = CreateDocumentInFolderWindow(self.documentTreeView.getRootItem(), self.documentTreeView.createNewDocHandler)
+        self.newDocumentWindow.show()
 
     def showNewFolderWindow(self):
-        print('new window')
+        self.newFolderWindow = CreateFolderInFolderWindow(self.documentTreeView.getRootItem(), self.documentTreeView.createNewFolderHandler)
+        self.newFolderWindow.show()
 
     def showEditProjectWindow(self):
-        print('edit project')
+        self.editProjectHandler()
 
     def buildCollapsedLayout(self):
         collapsedDocView = QFrame()
@@ -87,6 +93,7 @@ class DocumentViewContainer(QWidget):
         return hideDocumentsButton
 
     def setProject(self, project):
+        self.currentProject = project
         self.projectLabel.setText(project.name)
 
     def collapseDocumentView(self):
